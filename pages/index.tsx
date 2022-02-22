@@ -1,8 +1,6 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import React from "react";
 import Image from "next/image";
-import { styled, alpha } from "@mui/material/styles";
 import Marquee from "react-fast-marquee";
 import { Box } from "@mui/system";
 import {
@@ -20,7 +18,6 @@ import {
   ListItemText,
   Avatar,
   ListItemAvatar,
-  InputBase,
 } from "@mui/material";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 // Import Swiper React components
@@ -28,100 +25,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import TagIcon from "@mui/icons-material/Tag";
 // Import Swiper styles
 import "swiper/css";
+import PostCard from "../components/PostCard";
+import Link from "next/link";
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
 
 const Home: NextPage = () => {
   return (
     <>
-      <Paper sx={{ py: 1.5, display: "flex", gap: 2, px: 1 }}>
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Image
-            src="/android-icon-144x144.png"
-            alt="Abang Putih Al-Ansori"
-            width={40}
-            height={40}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Stack
-            spacing={4}
-            direction="row"
-            sx={{ height: 40, alignItems: "center" }}
-          >
-            {[
-              "Abang Putih Al-Ansori",
-              "Sedekah",
-              "Zakat",
-              "Yatim Piatu",
-              "Donasi",
-              "Tentang Kami",
-              "Login",
-              "Register",
-            ].map((e) => (
-              <Box
-                key={e}
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  p: 1,
-                  ":hover": {
-                    backgroundColor: "red",
-                    color: "white",
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                {e}
-              </Box>
-            ))}
-          </Stack>
-        </Box>
-      </Paper>
       <Box
         sx={{
           color: "white",
@@ -149,7 +59,23 @@ const Home: NextPage = () => {
           ))}
         </Marquee>
       </Box>
-      <Container sx={{ py: 4 }}>
+      <Box sx={{
+        overflowX: "auto",
+        display: "flex",
+        p: 0.5,
+        m: 0.5,
+        gap: 1
+      }}>
+
+
+        {[...Array(10)].map((e, i) =>
+          <Chip key={i} label="ZAKAT" />
+
+        )}
+
+        <Divider />
+      </Box>
+      <Container sx={{ py: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={8}>
             <Swiper
@@ -160,7 +86,10 @@ const Home: NextPage = () => {
               <SwiperSlide>
                 <Box
                   sx={{
-                    height: 400,
+                    height: {
+                      xs: 240,
+                      sx: 400,
+                    },
                     width: "100%",
                     position: "relative",
                     background:
@@ -175,10 +104,7 @@ const Home: NextPage = () => {
                       color: "white",
                     }}
                   >
-                    <Stack direction="row" spacing={1}>
-                      <Chip label="Donasi" color="secondary" />
-                      <Chip label="Zakat" color="secondary" />
-                    </Stack>
+
                     <Typography variant="h6" component={"h1"}>
                       Sri Mulyani Berdonasi sebesar Rp 100.000.000
                     </Typography>
@@ -192,80 +118,35 @@ const Home: NextPage = () => {
             </Swiper>
 
             <Paper>
-              <Typography variant="h6" component={"h1"} sx={{ my: 2, mx: 2 }}>
+              <Typography variant="h6" component={"h1"} sx={{ m: 2 }}>
                 BERITA TERKINI
               </Typography>
               <Divider />
               <Box>
                 {[...Array(10)].map((_, i) => (
-                  <Grid
-                    key={i}
-                    container
-                    spacing={1}
-                    sx={{ height: 150, my: 1 }}
-                  >
-                    <Grid item xs={3}>
-                      <Avatar
-                        variant="square"
-                        src="https://img.beritasatu.com/cache/beritasatu/910x580-2/1644679052.jpg"
-                        alt="ansori"
-                        sx={{
-                          width: "100%",
-                          height: "100%",
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={9}>
-                      <Typography variant="h6" component={"h1"}>
-                        Lorem ipsum dolor, sit amet consectetur adipisicing
-                        elit. Fugit, fuga!
-                      </Typography>
-                      <Typography variant="body2" component={"h1"}>
-                        Lorem ipsum dolor sit, amet consectetur adipisicing
-                        elit. Natus, iure.
-                      </Typography>
-                      <Typography variant="body2" component={"h1"}>
-                        ZAKAT | 10 jam yang lalu
-                      </Typography>
-                    </Grid>
-                  </Grid>
+                  <PostCard type="default" key={i} />
                 ))}
                 <Divider />
               </Box>
             </Paper>
 
             <Paper>
-              <Typography variant="h6" component={"h1"} sx={{ my: 2, mx: 2 }}>
+              <Typography variant="h6" component={"h1"} sx={{ m: 2 }}>
                 BERITA BISNIS
               </Typography>
               <Divider />
-              <Box>
-                <Grid container spacing={1}>
-                  {[...Array(3)].map((_, i) => (
-                    <Grid item key={i} xs={4}>
-                      <Box
-                        sx={{ my: 1, display: "flex", flexDirection: "column" }}
-                      >
-                        <Avatar
-                          variant="square"
-                          src="https://img.beritasatu.com/cache/beritasatu/910x580-2/1644679052.jpg"
-                          alt="ansori"
-                          sx={{
-                            width: "100%",
-                            height: 150,
-                          }}
-                        />
-                        <Typography variant="h6" component={"h1"}>
-                          Lorem ipsum dolor, sit amet consectetur adipisicing
-                        </Typography>
+              <Box sx={{
+                overflowX: "auto",
+                display: "flex",
+                p: 2,
+                gap: 1
+              }}>
 
-                        <Typography variant="body2" component={"h1"}>
-                          ZAKAT | 10 jam yang lalu
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
+
+                {[...Array(4)].map((e, i) =>
+                  <PostCard type="carousel" key={i} />
+                )}
+
                 <Divider />
               </Box>
             </Paper>
@@ -281,26 +162,30 @@ const Home: NextPage = () => {
             }}
           >
             <Paper>
-              <Typography variant="h6" component={"h1"} sx={{ my: 2, mx: 2 }}>
+
+              <Typography variant="h6" component={"h1"} sx={{ m: 2 }}>
                 TAG POPULER
               </Typography>
               <Divider />
 
               <List>
                 {[...Array(5)].map((_, i) => (
-                  <ListItem disablePadding key={i}>
-                    <ListItemButton>
-                      <ListItemIcon>
-                        <TagIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Zakat By Jokowi" />
-                    </ListItemButton>
-                  </ListItem>
+                  <Link href="/tags/popular" key={i}>
+                    <a >
+                      <ListItem disablePadding >
+                        <ListItemButton>
+                          <ListItemIcon>
+                            <TagIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Zakat By Jokowi" />
+                        </ListItemButton>
+                      </ListItem>
+                    </a></Link>
                 ))}
               </List>
             </Paper>
             <Paper>
-              <Typography variant="h6" component={"h1"} sx={{ my: 2, mx: 2 }}>
+              <Typography variant="h6" component={"h1"} sx={{ m: 2 }}>
                 GALERI ANSORI
               </Typography>
               <Divider />
@@ -309,7 +194,7 @@ const Home: NextPage = () => {
                 slidesPerView={1}
                 onSlideChange={() => console.log("slide change")}
               >
-                <SwiperSlide>
+                {[...Array(10)].map((_, i) => <SwiperSlide key={i}>
                   <Box
                     sx={{
                       height: 240,
@@ -324,74 +209,56 @@ const Home: NextPage = () => {
                       layout="fill"
                     />
                   </Box>
-                </SwiperSlide>
+                </SwiperSlide>)}
               </Swiper>
             </Paper>
             <Paper>
-              <Typography variant="h6" component={"h1"} sx={{ my: 2, mx: 2 }}>
-                DONASI TERBARU
+              <Typography variant="h6" component={"h1"} sx={{ m: 2 }}>
+                TOP   DONASI
               </Typography>
               <Divider />
               {[...Array(10)].map((_, i) => (
-                <ListItem key={i}>
-                  <ListItemAvatar>
-                    <Avatar>H</Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary="Hamba Allah" secondary="Rp 10.000" />
-                </ListItem>
+                <Link href="/donasi/id" key={i}>
+                  <a >
+                    <ListItem button>
+                      <ListItemAvatar>
+                        <Avatar>H</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Hamba Allah" secondary="Rp 10.000" />
+                    </ListItem>
+                  </a>
+                </Link>
               ))}
             </Paper>
             <Paper>
-              <Typography variant="h6" component={"h1"} sx={{ my: 2, mx: 2 }}>
+              <Typography variant="h6" component={"h1"} sx={{ m: 2 }}>
                 BERITA TOP
               </Typography>
               <Divider />
               <Box>
                 {[...Array(10)].map((_, i) => (
-                  <Grid
-                    key={i}
-                    container
-                    spacing={1}
-                    sx={{ height: 70, my: 1 }}
-                  >
-                    <Grid item xs={3}>
-                      <Avatar
-                        variant="square"
-                        src="https://img.beritasatu.com/cache/beritasatu/910x580-2/1644679052.jpg"
-                        alt="ansori"
-                        sx={{
-                          width: "100%",
-                          height: "100%",
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={9}>
-                      <Typography variant="body2" component={"h1"}>
-                        Lorem ipsum dolor, sit amet consectetur adipisicing
-                        elit. Fugit, fuga!
-                      </Typography>
-                      <Typography variant="body2" component={"h1"}>
-                        ZAKAT | 10 jam yang lalu
-                      </Typography>
-                    </Grid>
-                  </Grid>
+                  <PostCard type="default" key={i} />
                 ))}
                 <Divider />
               </Box>
             </Paper>
             <Paper>
-              <Typography variant="h6" component={"h1"} sx={{ my: 2, mx: 2 }}>
+              <Typography variant="h6" component={"h1"} sx={{ m: 2 }}>
                 ANGGOTA KAMI
               </Typography>
               <Divider />
               <Box>
                 {[...Array(10)].map((_, i) => (
-                  <ListItem key={i}>
-                    <ListItemAvatar>
-                      <Avatar>A</Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary="ANSORI ABBAS" secondary="KETUA" />
-                  </ListItem>
+                  <Link href="/anggota/id" key={i}>
+                    <a >
+                      <ListItem button>
+                        <ListItemAvatar>
+                          <Avatar>A</Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary="ANSORI ABBAS" secondary="KETUA" />
+                      </ListItem>
+                    </a>
+                  </Link>
                 ))}
                 <Divider />
               </Box>

@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
-import AdminWrapper from '../../components/AdminWrapper'
-import MUITable from '../../components/MUITable'
+import AdminWrapper from '../../../components/AdminWrapper'
+import MUITable from '../../../components/MUITable'
 
 export default function News() {
   return (

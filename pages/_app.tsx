@@ -1,12 +1,15 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
+import '../styles/globals.css'
+import type { AppProps } from 'next/app'
 
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-import Head from "next/head";
-import Navbar from "../components/Navbar";
+import '@fontsource/roboto/300.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
+import '@fontsource/roboto/700.css'
+
+import Head from 'next/head'
+import Navbar from '../components/Navbar'
+import { ApolloProvider } from '@apollo/client'
+import { client } from '../modules/client'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -85,11 +88,17 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
       </Head>
-      <Navbar />
-      <Component {...pageProps} />
+      <ApolloProvider client={client}>
+        <Navbar />
+        <Component {...pageProps} />
+      </ApolloProvider>
     </>
-  );
+  )
 }
 
-export default MyApp;
+export default MyApp

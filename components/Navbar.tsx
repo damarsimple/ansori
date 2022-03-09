@@ -16,6 +16,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -83,12 +84,14 @@ const menus = [
   },
 ];
 
+const excepts = [/login/, /register/ ]
+
 export default function Navbar() {
   const detectMobile = useMobileDetect();
 
   const [open, setOpen] = useState(false);
 
-  const { push } = useRouter();
+  const { push,pathname } = useRouter();
 
   const MobileMenu = () => (
     <Paper
@@ -150,6 +153,8 @@ export default function Navbar() {
       </>
     );
   }
+
+  if(excepts.some((e) => e.test(pathname))) return <></>
 
   return (
     <Paper sx={{ py: 1.5, display: "flex", gap: 2, px: 1 }}>

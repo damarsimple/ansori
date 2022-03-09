@@ -55,7 +55,7 @@ interface TableProp<T> {
   keys: string
   countKeys: string
   TooltipChildren?: (row: T) => React.ReactNode
-  editPush?: (row: T) => string
+  onEdit?: (row: T) => void
 }
 
 export default function MUITable<T extends BaseModel>({
@@ -68,7 +68,7 @@ export default function MUITable<T extends BaseModel>({
   TooltipChildren,
   countQuery,
   countKeys,
-  editPush,
+  onEdit,
 }: TableProp<T>) {
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof T>('id')
@@ -184,113 +184,109 @@ export default function MUITable<T extends BaseModel>({
   return (
     <Paper sx={{ p: 1 }}>
       <Box sx={{ width: '100%' }}>
-        <Paper sx={{ width: '100%', mb: 2 }}>
-          <EnhancedTableToolbar
-            numSelected={selected.length}
-            handleSelectedDelete={handleSelectedDelete}
-            name={name}
-            handleSearch={handleSearch}
-          />
-          <TableContainer>
-            <Table
-              sx={{ minWidth: 750 }}
-              aria-labelledby="tableTitle"
-              size={'small'}
-            >
-              <EnhancedTableHead<T>
-                headcells={headcells}
-                numSelected={selected.length}
-                order={order}
-                orderBy={orderBy as string}
-                onSelectAllClick={handleSelectAllClick}
-                onRequestSort={handleRequestSort}
-                rowCount={rows.length}
-                name={name}
-                action={action}
-              />
-              <TableBody>
-                {rows.map((row, index) => {
-                  const isItemSelected = isSelected(row.id)
-                  const labelId = `enhanced-table-checkbox-${index}`
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          handleSelectedDelete={handleSelectedDelete}
+          name={name}
+          handleSearch={handleSearch}
+        />
+        <TableContainer>
+          <Table
+            sx={{ minWidth: 750 }}
+            aria-labelledby="tableTitle"
+            size={'small'}
+          >
+            <EnhancedTableHead<T>
+              headcells={headcells}
+              numSelected={selected.length}
+              order={order}
+              orderBy={orderBy as string}
+              onSelectAllClick={handleSelectAllClick}
+              onRequestSort={handleRequestSort}
+              rowCount={rows.length}
+              name={name}
+              action={action}
+            />
+            <TableBody>
+              {rows.map((row, index) => {
+                const isItemSelected = isSelected(row.id)
+                const labelId = `enhanced-table-checkbox-${index}`
 
-                  return (
-                    <HtmlTooltip
-                      key={row.id}
-                      title={
-                        <React.Fragment>
-                          {TooltipChildren && TooltipChildren(row)}
-                        </React.Fragment>
-                      }
-                    >
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        selected={isItemSelected}
-                      >
-                        <TableCell
-                          padding="checkbox"
-                          onClick={(event) => handleClick(event, row.id)}
-                        >
-                          <Checkbox color="primary" checked={isItemSelected} />
-                        </TableCell>
-                        <TableCell
-                          component="th"
-                          id={labelId}
-                          scope="row"
-                          onClick={(event) => handleClick(event, row.id)}
-                        >
-                          {row.id}
-                        </TableCell>
-                        {headcells.map((headcell) => (
-                          <TableCell
-                            onClick={(event) => handleClick(event, row.id)}
-                            component="th"
-                            scope="row"
-                            key={`${row.id}`}
-                          >
-                            {row[headcell.name]}
-                          </TableCell>
-                        ))}
-
-                        {action && (
-                          <TableCell component="th" id={labelId} scope="row">
-                            {action.includes('edit') && (
-                              <IconButton
-                                onClick={() => editPush && push(editPush(row))}
-                              >
-                                <Edit />
-                              </IconButton>
-                            )}
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    </HtmlTooltip>
-                  )
-                })}
-                {loading && (
-                  <TableRow
-                    style={{
-                      height: 33 * emptyRows,
-                    }}
+                return (
+                  <HtmlTooltip
+                    key={row.id}
+                    title={
+                      <React.Fragment>
+                        {TooltipChildren && TooltipChildren(row)}
+                      </React.Fragment>
+                    }
                   >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[25, 50, 100]}
-            component="div"
-            count={count}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      selected={isItemSelected}
+                    >
+                      <TableCell
+                        padding="checkbox"
+                        onClick={(event) => handleClick(event, row.id)}
+                      >
+                        <Checkbox color="primary" checked={isItemSelected} />
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        onClick={(event) => handleClick(event, row.id)}
+                      >
+                        {row.id}
+                      </TableCell>
+                      {headcells.map((headcell) => (
+                        <TableCell
+                          onClick={(event) => handleClick(event, row.id)}
+                          component="th"
+                          scope="row"
+                          key={`${row.id}`}
+                        >
+                          {row[headcell.name]}
+                        </TableCell>
+                      ))}
+
+                      {action && (
+                        <TableCell component="th" id={labelId} scope="row">
+                          {action.includes('edit') && (
+                            <IconButton onClick={() => onEdit && onEdit(row)}>
+                              <Edit />
+                            </IconButton>
+                          )}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  </HtmlTooltip>
+                )
+              })}
+              {loading && (
+                <TableRow
+                  style={{
+                    height: 33 * emptyRows,
+                  }}
+                >
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[25, 50, 100]}
+          component="div"
+          count={count}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Box>
     </Paper>
   )

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState } from 'react'
 import { styled, useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
@@ -63,7 +63,6 @@ const AppBar = styled(MuiAppBar, {
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
@@ -75,7 +74,7 @@ export default function PersistentDrawerLeft({
   children: React.ReactNode
 }) {
   const theme = useTheme()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(true)
 
   const handleDrawerOpen = () => {
     setOpen(true)
@@ -100,7 +99,7 @@ export default function PersistentDrawerLeft({
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Persistent drawer
+            ANSORI
           </Typography>
         </Toolbar>
       </AppBar>
@@ -153,6 +152,11 @@ export default function PersistentDrawerLeft({
               title: 'Akun Donasi',
               path: '/donationaccount/',
               icon: 'savings',
+            },
+            {
+              title: 'Anggota',
+              path: '/members/',
+              icon: 'people',
             },
           ].map(({ title, path, icon }) => (
             <Link key={title} href={path}>

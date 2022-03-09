@@ -17,11 +17,11 @@ interface ConfirmModalState {
 }
 
 export const useConfirmModalStore = create<ConfirmModalState>((set) => ({
-  show: true,
+  show: false,
   setShow: (show) => set({ show }),
-  title: 'Test',
+  title: '',
   setTitle: (title) => set({ title }),
-  content: 'aa',
+  content: '',
   setContent: (content) => set({ content }),
   next: undefined,
   setNext: (next) => set({ next }),

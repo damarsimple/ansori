@@ -1,69 +1,55 @@
-import React from 'react'
-import { Box, Chip, Container, Grid, Paper, Typography } from '@mui/material'
-import Image from 'next/image'
-import { grey } from '@mui/material/colors'
-import Link from 'next/link'
-import Divider from '@mui/material/Divider'
-import PostCard from '../../components/PostCard'
-export default function Slug() {
-  const { href } = process.browser && window ? window.location : { href: '' }
+import React from "react";
+import { Box, Chip, Container, Grid, Paper, Typography } from "@mui/material";
+import Image from "next/image";
+import { grey } from "@mui/material/colors";
+import Link from "next/link";
+import Divider from "@mui/material/Divider";
+import PostCard from "../../components/PostCard";
+import { News } from "../../types";
+import { gql } from "@apollo/client";
+import { GetStaticProps } from "next";
+import { client } from "../../modules/client";
+import moment from "moment";
+export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
+  const { href } = process.browser && window ? window.location : { href: "" };
+
+  const { title, author, description, wide, potrait, content, createdAt } =
+    findUniqueNews || {};
 
   return (
     <Container>
       <Box
         sx={{
           p: 1,
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
           gap: 1,
         }}
       >
-        <Typography variant="h5" component="h1" fontWeight={'bold'}>
-          Zakat Dari Al - Ansori dari kami untuk anda{' '}
+        <Typography variant="h5" component="h1" fontWeight={"bold"}>
+          {title}
         </Typography>
-
-        <Typography variant="body1">Sabtu, 19 Oktober 2020 | 12.55</Typography>
+        Sabtu, 19 Oktober 2020 | 12.55
         <Typography variant="body1">
-          Oleh: <strong>Admin</strong>
+          {moment(createdAt).format("dddd, Do MMMM YYYY | hh:mm")}
         </Typography>
-
+        <Typography variant="body1">
+          Oleh: <strong>{author?.name}</strong>
+        </Typography>
         <Box
           sx={{
             backgroundColor: grey[100],
-            width: '100%',
+            width: "100%",
             height: 400,
-            position: 'relative',
+            position: "relative",
           }}
         >
-          <Image
-            src="https://picsum.photos/id/10/200/300"
-            alt=""
-            layout="fill"
-          />
+          <Image src={wide ?? ""} alt={title} layout="fill" />
           <Typography variant="caption" component="p" sx={{ m: 1 }}>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quae,
-            quibusdam?
+            {description}
           </Typography>
         </Box>
-
-        <Typography paragraph>
-          {' '}
-          <strong>Oslo, Beritasatu.com -</strong>{' '}
-          <a href="https://www.beritasatu.com/tag/pesawat-militer-as">
-            Pesawat militer AS
-          </a>{' '}
-          dengan empat orang di dalamnya jatuh di{' '}
-          <a href="https://www.beritasatu.com/tag/norwegia">Norwegia</a> utara
-          saat{' '}
-          <a href="https://www.beritasatu.com/tag/latihan-militer">
-            latihan militer
-          </a>{' '}
-          <a href="https://www.beritasatu.com/tag/nato">NATO</a>, kata polisi
-          setempat dan Pusat Koordinasi Penyelamatan Gabungan (JRCC) negara itu,
-          Jumat (18/3/2022).
-        </Typography>
-
-        {[...Array(10)].map((_, i) => (
+        {/* {[...Array(10)].map((_, i) => (
           <Typography paragraph key={i}>
             Pesawat MV-22B Osprey milik Korps Marinir AS itu sedang mengambil
             bagian dalam latihan militer NATO yang disebut Cold Response ketika
@@ -72,11 +58,12 @@ export default function Slug() {
             mencari di daerah itu melihat puing-puing dari udara setelah
             menerima sinyal darurat.
           </Typography>
-        ))}
+        ))} */}
+        {content && <div dangerouslySetInnerHTML={{ __html: content }}></div>}
         <Box
           sx={{
-            overflowX: 'auto',
-            display: 'flex',
+            overflowX: "auto",
+            display: "flex",
             p: 0.5,
             m: 0.5,
             gap: 1,
@@ -88,32 +75,31 @@ export default function Slug() {
 
           <Divider />
         </Box>
-        <Typography component="h6" variant="h6" textAlign={'center'}>
+        <Typography component="h6" variant="h6" textAlign={"center"}>
           BAGIKAN
         </Typography>
-
         <Box
           sx={{
-            display: 'flex',
+            display: "flex",
             gap: 3,
-            justifyContent: 'center',
+            justifyContent: "center",
           }}
         >
           {[
             {
-              image: '/facebook.png',
-              url: 'https://www.facebook.com/sharer/sharer.php?u=' + href,
+              image: "/facebook.png",
+              url: "https://www.facebook.com/sharer/sharer.php?u=" + href,
             },
             {
-              image: '/twitter.png',
-              url: 'https://twitter.com/intent/tweet?url=' + href,
+              image: "/twitter.png",
+              url: "https://twitter.com/intent/tweet?url=" + href,
             },
             {
-              image: '/whatsapp.png',
-              url: 'https://wa.me/?text=' + href,
+              image: "/whatsapp.png",
+              url: "https://wa.me/?text=" + href,
             },
             {
-              image: '/email.png',
+              image: "/email.png",
               url: `mailto:?subject={"TITLE"}&body=Check berita ini ${href}`,
             },
           ].map((e) => (
@@ -126,7 +112,7 @@ export default function Slug() {
         </Box>
       </Box>
 
-      <Paper>
+      {/* <Paper>
         <Typography variant="h6" component={'h1'} sx={{ m: 2 }}>
           BERITA TERKINI
         </Typography>
@@ -139,7 +125,100 @@ export default function Slug() {
           ))}
           <Divider />
         </Grid>
-      </Paper>
+      </Paper> */}
     </Container>
-  )
+  );
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const slug = context?.params?.slug as string;
+
+  if (!slug) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const { data: { findUniqueNews } = {}, error: error } = await client.query<{
+    findUniqueNews: News;
+  }>({
+    query: gql`
+      query FindFirstNews($where: NewsWhereUniqueInput!) {
+        findUniqueNews(where: $where) {
+          id
+          published
+          title
+          author {
+            id
+            name
+          }
+          slug
+          categories {
+            id
+            name
+            slug
+          }
+          createdAt
+          updatedAt
+          views
+          potrait
+          wide
+          content
+          description
+        }
+      }
+    `,
+    variables: {
+      where: {
+        slug,
+      },
+    },
+  });
+
+  // if (findFirstComic?.id) {
+  //   client.query({
+  //     query: gql`
+  //       mutation ReportViewComic($reportViewId: Int!, $context: String!) {
+  //         reportView(id: $reportViewId, context: $context)
+  //       }
+  //     `,
+  //     variables: {
+  //       reportViewId: findFirstComic.id,
+  //       context: "comic",
+  //     },
+  //   });
+  // }
+  // if (error) {
+  //   console.log(error);
+  // }
+
+  return {
+    notFound: !findUniqueNews,
+    props: {
+      findUniqueNews,
+    },
+    revalidate: 60 * 60, // 1 hours
+  };
+};
+
+export async function getStaticPaths() {
+  const { data: { findManyNews } = {} } = await client.query<{
+    findManyNews: News[];
+  }>({
+    query: gql`
+      query FindAll {
+        findManyNews {
+          id
+          slug
+        }
+      }
+    `,
+  });
+
+  const paths =
+    findManyNews?.map((news) => ({
+      params: { slug: news.slug },
+    })) ?? [];
+
+  return { paths, fallback: "blocking" };
 }

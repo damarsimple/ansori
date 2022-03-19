@@ -1,92 +1,99 @@
-import { Box, Avatar, Typography } from '@mui/material'
-import React from 'react'
-import Link from 'next/link'
+import { Box, Avatar, Typography } from "@mui/material";
+import React from "react";
+import Link from "next/link";
+import { News } from "../types";
+import moment from "moment";
 
-export default function PostCard({
-  type = 'default',
-}: {
-  type: 'default' | 'carousel'
-}) {
+interface PostProp extends News {
+  type: "default" | "carousel";
+}
+
+export default function PostCard({ type = "default", ...rest }: PostProp) {
+  const cat = rest.categories && rest.categories[0];
+
   switch (type) {
-    case 'carousel':
+    case "carousel":
       return (
-        <Box sx={{ my: 1, display: 'flex', flexDirection: 'column' }}>
-          <Link href="/post/slug">
+        <Box sx={{ my: 1, display: "flex", flexDirection: "column" }}>
+          <Link href={"/post/" + rest.slug}>
             <a>
-              <Avatar
-                variant="square"
-                src="https://img.beritasatu.com/cache/beritasatu/910x580-2/1644679052.jpg"
-                alt="ansori"
-                sx={{
-                  width: 240,
-                  height: 150,
-                }}
-              />
+              {rest.wide && (
+                <Avatar
+                  variant="square"
+                  src={rest.wide}
+                  alt={rest.title}
+                  sx={{
+                    width: 240,
+                    height: 150,
+                  }}
+                />
+              )}
             </a>
           </Link>
 
-          <Link href="/post/slug">
+          <Link href={"/post/" + rest.slug}>
             <a>
-              <Typography variant="h6" component={'h1'}>
-                Lorem ipsum dolor, sit amet consectetur adipisicing
+              <Typography variant="h6" component={"h1"}>
+                {rest.title}
               </Typography>
             </a>
           </Link>
 
-          <Link href="/category/slug">
+          <Link href={"/category/" + cat?.slug}>
             <a>
-              <Typography variant="body2" component={'h1'}>
-                ZAKAT | 10 jam yang lalu
+              <Typography variant="body2" component={"h1"}>
+                {cat?.name} | {moment(rest.createdAt).fromNow()}
               </Typography>
             </a>
           </Link>
         </Box>
-      )
-      break
+      );
+      break;
 
     default:
       return (
         <Box display="flex" gap={3} mb={2}>
-          <Link href="/post/slug">
+          <Link href={"/post/" + rest.slug}>
             <a>
-              <Avatar
-                variant="square"
-                src="https://img.beritasatu.com/cache/beritasatu/910x580-2/1644679052.jpg"
-                alt="ansori"
-                sx={{
-                  width: 110,
-                  height: 110,
-                }}
-              />
+              {rest.potrait && (
+                <Avatar
+                  variant="square"
+                  src={rest.potrait}
+                  alt={rest.title}
+                  sx={{
+                    width: 110,
+                    height: 110,
+                  }}
+                />
+              )}
             </a>
           </Link>
           <Box>
-            <Link href="/post/slug">
+            <Link href={"/post/" + rest.slug}>
               <a>
                 <Typography
-                  variant={'h6'}
-                  component={'h1'}
+                  variant={"h6"}
+                  component={"h1"}
                   sx={{
-                    fontWeigth: 'bold',
+                    fontWeigth: "bold",
                     height: 90,
                   }}
                 >
-                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                  Fugit
+                  {rest.title}
                 </Typography>
               </a>
             </Link>
 
-            <Link href="/category/slug">
+            <Link href={"/category/" + cat?.slug}>
               <a>
-                <Typography variant="caption" component={'h1'}>
-                  ZAKAT | 10 jam yang lalu
+                <Typography variant="caption" component={"h1"}>
+                  {cat?.name} | {moment(rest.createdAt).fromNow()}
                 </Typography>
               </a>
             </Link>
           </Box>
         </Box>
-      )
-      break
+      );
+      break;
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   FormGroup,
   Box,
@@ -13,14 +13,15 @@ import {
   FormControl,
   InputLabel,
   Select,
-} from '@mui/material'
-import Divider from '@mui/material/Divider'
-import MUITable from '../../components/MUITable'
-import { gql } from '@apollo/client'
-import Button from '@mui/material/Button'
+} from "@mui/material";
+import Divider from "@mui/material/Divider";
+import MUITable from "../../components/MUITable";
+import { gql } from "@apollo/client";
+import Button from "@mui/material/Button";
+import { Donation } from "../../types";
 
 export default function Slug() {
-  const [tabs, setTabs] = useState(0)
+  const [tabs, setTabs] = useState(0);
 
   return (
     <Container>
@@ -31,8 +32,8 @@ export default function Slug() {
         </Tabs>
         <Divider />
         {tabs == 0 && (
-          <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <Box sx={{ display: 'flex', gap: 2, alignContent: 'center' }}>
+          <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 3 }}>
+            <Box sx={{ display: "flex", gap: 2, alignContent: "center" }}>
               <TextField
                 label="Nama Donatur"
                 variant="standard"
@@ -66,7 +67,7 @@ export default function Slug() {
               required
             />
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <FormControl
                 fullWidth
                 variant="standard"
@@ -131,31 +132,38 @@ export default function Slug() {
           </Box>
         )}
         {tabs == 1 && (
-          <MUITable<{ id: number; name: string }>
+          <MUITable<Donation>
             headcells={[
               {
-                name: 'name',
-                label: 'Name',
+                name: "name",
+                label: "Nama Donatur",
+              },
+
+              {
+                name: "amount",
+                label: "Jumlah Donasi",
+              },
+              {
+                name: "message",
+                label: "Pesan",
               },
             ]}
-            name={'DATA DONATUR'}
-            keys={'findManyComic'}
-            countKeys={'findManyComicCount'}
+            name={"DATA DONATUR"}
+            keys={"findManyDonation"}
+            countKeys={"findManyDonationCount"}
             countQuery={gql`
-              query FindManyComicCount {
-                findManyComicCount
+              query FindManyDonationCount {
+                findManyDonationCount
               }
             `}
-            // action={['edit', 'delete']}
-            // deleteQuery={gql``}
             query={gql`
-              query(
+              query (
                 $take: Int
                 $skip: Int
-                $orderBy: [ComicOrderByWithRelationInput]
-                $where: ComicWhereInput
+                $orderBy: [DonationOrderByWithRelationInput]
+                $where: DonationWhereInput
               ) {
-                findManyComic(
+                findManyDonation(
                   take: $take
                   skip: $skip
                   orderBy: $orderBy
@@ -163,25 +171,8 @@ export default function Slug() {
                 ) {
                   id
                   name
-                  slug
-                  thumb
-                  type
-                  thumbWide
-                  altName
-                  released
-                  isHentai
-                  rating
-                  views
-                  viewsHourly
-                  viewsDaily
-                  viewsWeek
-                  description
-                  status
-                  age
-                  concept
-                  lastChapterUpdateAt
-                  createdAt
-                  updatedAt
+                  amount
+                  message
                 }
               }
             `}
@@ -189,5 +180,5 @@ export default function Slug() {
         )}
       </Paper>
     </Container>
-  )
+  );
 }

@@ -47,11 +47,7 @@ const logTimeLink = new ApolloLink((operation, forward) => {
   })
 })
 
-const uri = process.browser
-  ? process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
-  : process.env.NEXT_PUBLIC_USE_INNER_GRAPHQL_ENDPOINT == 'true'
-  ? process.env.NEXT_PUBLIC_INNER_GRAPHQL_ENDPOINT
-  : process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
+const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT 
 
 const httpLink = new HttpLink({
   uri,

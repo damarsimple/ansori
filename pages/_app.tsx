@@ -12,6 +12,8 @@ import Navbar from '../components/Navbar'
 import { ApolloProvider } from '@apollo/client'
 import { client } from '../modules/client'
 import ConfirmModal from '../components/ConfirmModal'
+import { Typography, Container } from '@mui/material'
+import Copyright from '../components/Copyright'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -99,6 +101,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Navbar />
         <Component {...pageProps} />
         <ConfirmModal />
+
+        <Container maxWidth="sm">
+          <Copyright />
+        </Container>
       </ApolloProvider>
     </>
   )

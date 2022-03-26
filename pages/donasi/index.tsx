@@ -19,9 +19,29 @@ import MUITable from "../../components/MUITable";
 import { gql } from "@apollo/client";
 import Button from "@mui/material/Button";
 import { Donation } from "../../types";
+import { useForm } from "react-hook-form";
+
+
+type Option = {
+  label: string;
+  value: string;
+};
+
+const options = [
+  { label: 'Chocolate', value: 'chocolate' },
+  { label: 'Strawberry', value: 'strawberry' },
+  { label: 'Vanilla', value: 'vanilla' },
+];
 
 export default function Slug() {
   const [tabs, setTabs] = useState(0);
+  
+   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<{
+     type: string;
+  }>({
+    defaultValues: { type: "" },
+  });
+  const onSubmit = handleSubmit((data) => console.log(data));
 
   return (
     <Container>
@@ -32,7 +52,7 @@ export default function Slug() {
         </Tabs>
         <Divider />
         {tabs == 0 && (
-          <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 3 }}>
+          <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 3 }} component='form'>
             <Box sx={{ display: "flex", gap: 2, alignContent: "center" }}>
               <TextField
                 label="Nama Donatur"
@@ -67,6 +87,14 @@ export default function Slug() {
               required
             />
 
+            <Select label="Tipe Donasi">
+              <MenuItem>Infaq</MenuItem>
+              <MenuItem>Sedekah</MenuItem>
+              <MenuItem>Zakat Mal</MenuItem>
+              <MenuItem>Zakat Fitrah</MenuItem>
+              <MenuItem>Yatim Piatu</MenuItem>
+            </Select>
+            
             <Box sx={{ display: "flex", gap: 2 }}>
               <FormControl
                 fullWidth
@@ -181,4 +209,10 @@ export default function Slug() {
       </Paper>
     </Container>
   );
+}
+
+const CalculatorZakatMal = () => {
+
+  return <></>
+
 }

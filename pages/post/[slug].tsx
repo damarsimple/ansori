@@ -10,6 +10,7 @@ import { gql } from "@apollo/client";
 import { GetStaticProps } from "next";
 import { client } from "../../modules/client";
 import moment from "moment";
+import { Email, Facebook, Twitter, WhatsApp } from "@mui/icons-material";
 export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
   const { href } = process.browser && window ? window.location : { href: "" };
 
@@ -29,7 +30,6 @@ export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
         <Typography variant="h5" component="h1" fontWeight={"bold"}>
           {title}
         </Typography>
-        Sabtu, 19 Oktober 2020 | 12.55
         <Typography variant="body1">
           {moment(createdAt).format("dddd, Do MMMM YYYY | hh:mm")}
         </Typography>
@@ -59,7 +59,9 @@ export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
             menerima sinyal darurat.
           </Typography>
         ))} */}
-        {content && <div dangerouslySetInnerHTML={{ __html: content }}></div>}
+        <Typography paragraph>
+           {content && <div dangerouslySetInnerHTML={{ __html: content }}></div>}
+       </Typography>
         <Box
           sx={{
             overflowX: "auto",
@@ -87,25 +89,25 @@ export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
         >
           {[
             {
-              image: "/facebook.png",
+              image: <Facebook color="primary"/>,
               url: "https://www.facebook.com/sharer/sharer.php?u=" + href,
             },
             {
-              image: "/twitter.png",
+              image: <Twitter color="primary"/>,
               url: "https://twitter.com/intent/tweet?url=" + href,
             },
             {
-              image: "/whatsapp.png",
+              image: <WhatsApp color="primary"/>,
               url: "https://wa.me/?text=" + href,
             },
             {
-              image: "/email.png",
+              image: <Email color="primary"/>,
               url: `mailto:?subject={"TITLE"}&body=Check berita ini ${href}`,
             },
           ].map((e) => (
-            <Link href={e.url} key={e.image}>
+            <Link href={e.url} key={e.url}>
               <a>
-                <Image src={e.image} height={50} width={50} alt={e.url} />
+                {e.image}
               </a>
             </Link>
           ))}

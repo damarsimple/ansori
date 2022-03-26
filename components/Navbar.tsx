@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { styled, alpha } from "@mui/material/styles";
+import { styled, alpha, useTheme } from '@mui/material/styles';
 import {
   Box,
   InputBase,
@@ -113,7 +113,10 @@ export default function Navbar() {
         }
       }
     `
+
   );
+
+  const theme = useTheme();
 
   const MobileMenu = () => (
     <Paper
@@ -124,6 +127,7 @@ export default function Navbar() {
         px: 1,
         alignItems: "center",
         justifyContent: "space-between",
+        backgroundColor: theme.palette.primary.main
       }}
     >
       <IconButton onClick={() => setOpen(!open)}>
@@ -166,12 +170,13 @@ export default function Navbar() {
                 <ListItem
                   button
                   key={text.name}
+                
                   onClick={() => {
                     push(text.path);
                     setOpen(false);
                   }}
                 >
-                  <Typography variant="h6" component={"h1"}>
+                  <Typography variant="h6" component={"h1"}   sx={{ color:"dark"}}>
                     {text.name}
                   </Typography>
                 </ListItem>
@@ -186,7 +191,7 @@ export default function Navbar() {
   if (excepts.some((e) => e.test(pathname))) return <></>;
 
   return (
-    <Paper sx={{ py: 1.5, display: "flex", gap: 2, px: 1 }}>
+    <Paper sx={{ py: 1.5, display: "flex", gap: 2, px: 1,   backgroundColor: theme.palette.primary.main }}>
       <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
         <Image
           src="/android-icon-144x144.png"
@@ -212,6 +217,7 @@ export default function Navbar() {
               <a>
                 <Box
                   sx={{
+                    color:"white",
                     height: "100%",
                     display: "flex",
                     alignItems: "center",

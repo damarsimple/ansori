@@ -24,6 +24,7 @@ import PostCard from "../components/PostCard";
 import Link from "next/link";
 import { useQuery, gql } from "@apollo/client";
 import { Category, Donation, ImageGallery, Member, News } from "../types";
+import { useTheme } from '@mui/material/styles';
 
 const formatter = (x: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(
@@ -269,12 +270,14 @@ const Home: NextPage = () => {
     }
   );
 
+  const theme = useTheme();
+
   return (
     <>
       <Box
         sx={{
-          color: "white",
-          backgroundColor: "red",
+          backgroundColor: "white",
+          color: theme.palette.primary.main
         }}
       >
         <Marquee gradient={false} pauseOnHover>

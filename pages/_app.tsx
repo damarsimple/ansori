@@ -1,19 +1,36 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import "../styles/globals.css";
+import type { AppProps } from "next/app";
 
-import '@fontsource/roboto/300.css'
-import '@fontsource/roboto/400.css'
-import '@fontsource/roboto/500.css'
-import '@fontsource/roboto/700.css'
-import 'react-quill/dist/quill.snow.css'
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import "react-quill/dist/quill.snow.css";
 
-import Head from 'next/head'
-import Navbar from '../components/Navbar'
-import { ApolloProvider } from '@apollo/client'
-import { client } from '../modules/client'
-import ConfirmModal from '../components/ConfirmModal'
-import { Typography, Container } from '@mui/material'
-import Copyright from '../components/Copyright'
+import Head from "next/head";
+import Navbar from "../components/Navbar";
+import { ApolloProvider } from "@apollo/client";
+import { client } from "../modules/client";
+import ConfirmModal from "../components/ConfirmModal";
+import { Typography, Container } from "@mui/material";
+import Copyright from "../components/Copyright";
+
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Checkbox from "@mui/material/Checkbox";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#ED1C24",
+    },
+    secondary: {
+      main: "#f50057",
+    },
+    success: {
+      main: "#088318",
+    },
+  },
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -97,17 +114,19 @@ function MyApp({ Component, pageProps }: AppProps) {
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
         />
       </Head>
-      <ApolloProvider client={client}>
-        <Navbar />
-        <Component {...pageProps} />
-        <ConfirmModal />
+      <ThemeProvider theme={theme}>
+        <ApolloProvider client={client}>
+          <Navbar />
+          <Component {...pageProps} />
+          <ConfirmModal />
 
-        <Container maxWidth="sm">
-          <Copyright />
-        </Container>
-      </ApolloProvider>
+          <Container maxWidth="sm">
+            <Copyright />
+          </Container>
+        </ApolloProvider>
+      </ThemeProvider>
     </>
-  )
+  );
 }
 
-export default MyApp
+export default MyApp;

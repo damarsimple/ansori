@@ -1,5 +1,6 @@
-/* eslint-disable */
 //@ts-nocheck
+/* eslint-disable */
+
 // *******************************************************
 // *******************************************************
 //
@@ -14,33 +15,17 @@
 
 export type Maybe<T> = T | null;
 
-export interface ImageGallery {
-  id: number;
-  name: string;
-  description: Maybe<string>;
-  image: Maybe<string>;
-  createdAt: undefined;
-  updatedAt: undefined;
-}
-
-export interface Member {
-  id: number;
-  name: string;
-  role: string;
-  description: Maybe<string>;
-  image: Maybe<string>;
-  createdAt: undefined;
-  updatedAt: undefined;
-}
-
 export interface Donation {
   id: number;
   name: string;
-  message: Maybe<string>;
+  hideName: boolean;
+  message: string;
   amount: number;
   accountId: number;
   account: DonationAccount;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   approvedById: Maybe<number>;
   approvedBy: Maybe<User>;
   createdAt: undefined;
@@ -51,6 +36,7 @@ export interface DonationAccount {
   id: number;
   name: string;
   accountNumber: string;
+  accountName: string;
   bankName: string;
   logoUrl: string;
   donations: Donation[];
@@ -80,7 +66,27 @@ export interface News {
   wide: Maybe<string>;
   content: string;
   description: Maybe<string>;
+  shareCountMap: string;
   _count: NewsCountOutputType;
+}
+
+export interface ImageGallery {
+  id: number;
+  name: string;
+  description: Maybe<string>;
+  image: Maybe<string>;
+  createdAt: undefined;
+  updatedAt: undefined;
+}
+
+export interface Member {
+  id: number;
+  name: string;
+  role: string;
+  description: Maybe<string>;
+  image: Maybe<string>;
+  createdAt: undefined;
+  updatedAt: undefined;
 }
 
 export interface User {
@@ -98,89 +104,114 @@ export interface User {
   _count: UserCountOutputType;
 }
 
+export interface MetalPrice {
+  name: Maybe<string>;
+  price: Maybe<number>;
+}
+
 export interface BatchPayload {
   count: number;
 }
 
 export enum UserScalarFieldEnum {
-  Id = 'id',
-  Email = 'email',
-  Name = 'name',
-  Profilepicture = 'profilePicture',
-  Password = 'password',
-  Showonhomepage = 'showOnHomepage',
-  Roles = 'roles',
-  Createdat = 'createdAt',
-  Updatedat = 'updatedAt',
+  Id = "id",
+  Email = "email",
+  Name = "name",
+  Profilepicture = "profilePicture",
+  Password = "password",
+  Showonhomepage = "showOnHomepage",
+  Roles = "roles",
+  Createdat = "createdAt",
+  Updatedat = "updatedAt",
 }
 export enum MemberScalarFieldEnum {
-  Id = 'id',
-  Name = 'name',
-  Role = 'role',
-  Description = 'description',
-  Image = 'image',
-  Createdat = 'createdAt',
-  Updatedat = 'updatedAt',
+  Id = "id",
+  Name = "name",
+  Role = "role",
+  Description = "description",
+  Image = "image",
+  Createdat = "createdAt",
+  Updatedat = "updatedAt",
 }
 export enum ImageGalleryScalarFieldEnum {
-  Id = 'id',
-  Name = 'name',
-  Description = 'description',
-  Image = 'image',
-  Createdat = 'createdAt',
-  Updatedat = 'updatedAt',
+  Id = "id",
+  Name = "name",
+  Description = "description",
+  Image = "image",
+  Createdat = "createdAt",
+  Updatedat = "updatedAt",
 }
 export enum NewsScalarFieldEnum {
-  Id = 'id',
-  Published = 'published',
-  Title = 'title',
-  Authorid = 'authorId',
-  Slug = 'slug',
-  Createdat = 'createdAt',
-  Updatedat = 'updatedAt',
-  Views = 'views',
-  Potrait = 'potrait',
-  Wide = 'wide',
-  Content = 'content',
-  Description = 'description',
+  Id = "id",
+  Published = "published",
+  Title = "title",
+  Authorid = "authorId",
+  Slug = "slug",
+  Createdat = "createdAt",
+  Updatedat = "updatedAt",
+  Views = "views",
+  Potrait = "potrait",
+  Wide = "wide",
+  Content = "content",
+  Description = "description",
+  Sharecountmap = "shareCountMap",
 }
 export enum CategoryScalarFieldEnum {
-  Id = 'id',
-  Name = 'name',
-  Slug = 'slug',
+  Id = "id",
+  Name = "name",
+  Slug = "slug",
 }
 export enum DonationAccountScalarFieldEnum {
-  Id = 'id',
-  Name = 'name',
-  Accountnumber = 'accountNumber',
-  Bankname = 'bankName',
-  Logourl = 'logoUrl',
+  Id = "id",
+  Name = "name",
+  Accountnumber = "accountNumber",
+  Accountname = "accountName",
+  Bankname = "bankName",
+  Logourl = "logoUrl",
 }
 export enum DonationScalarFieldEnum {
-  Id = 'id',
-  Name = 'name',
-  Message = 'message',
-  Amount = 'amount',
-  Accountid = 'accountId',
-  Status = 'status',
-  Approvedbyid = 'approvedById',
-  Createdat = 'createdAt',
-  Updatedat = 'updatedAt',
+  Id = "id",
+  Name = "name",
+  Hidename = "hideName",
+  Message = "message",
+  Amount = "amount",
+  Accountid = "accountId",
+  Status = "status",
+  Cityname = "cityName",
+  Type = "type",
+  Approvedbyid = "approvedById",
+  Createdat = "createdAt",
+  Updatedat = "updatedAt",
 }
 export enum SortOrder {
-  Asc = 'asc',
-  Desc = 'desc',
+  Asc = "asc",
+  Desc = "desc",
+}
+export enum JsonNullValueInput {
+  Jsonnull = "JsonNull",
+}
+export enum JsonNullValueFilter {
+  Dbnull = "DbNull",
+  Jsonnull = "JsonNull",
+  Anynull = "AnyNull",
 }
 export enum Roles {
-  Master_admin = 'MASTER_ADMIN',
-  Admin = 'ADMIN',
-  Editor = 'EDITOR',
-  User = 'USER',
+  Master_admin = "MASTER_ADMIN",
+  Admin = "ADMIN",
+  Editor = "EDITOR",
+  User = "USER",
 }
 export enum DonationStatus {
-  Pending = 'PENDING',
-  Approved = 'APPROVED',
-  Rejected = 'REJECTED',
+  Pending = "PENDING",
+  Approved = "APPROVED",
+  Rejected = "REJECTED",
+}
+export enum DonationType {
+  Infaq = "Infaq",
+  Sedekah = "Sedekah",
+  Zakat_mal = "Zakat_Mal",
+  Zakat_fitrah = "Zakat_Fitrah",
+  Yatim_piatu = "Yatim_Piatu",
 }
 export interface UserWhereInput {
   AND?: UserWhereInput[];
@@ -370,6 +401,7 @@ export interface NewsWhereInput {
   wide?: StringNullableFilter;
   content?: StringFilter;
   description?: StringNullableFilter;
+  shareCountMap?: JsonFilter;
 }
 
 export interface NewsOrderByWithRelationInput {
@@ -387,6 +419,7 @@ export interface NewsOrderByWithRelationInput {
   wide?: SortOrder;
   content?: SortOrder;
   description?: SortOrder;
+  shareCountMap?: SortOrder;
 }
 
 export interface NewsWhereUniqueInput {
@@ -407,6 +440,7 @@ export interface NewsOrderByWithAggregationInput {
   wide?: SortOrder;
   content?: SortOrder;
   description?: SortOrder;
+  shareCountMap?: SortOrder;
   _count?: NewsCountOrderByAggregateInput;
   _avg?: NewsAvgOrderByAggregateInput;
   _max?: NewsMaxOrderByAggregateInput;
@@ -430,6 +464,7 @@ export interface NewsScalarWhereWithAggregatesInput {
   wide?: StringNullableWithAggregatesFilter;
   content?: StringWithAggregatesFilter;
   description?: StringNullableWithAggregatesFilter;
+  shareCountMap?: JsonWithAggregatesFilter;
 }
 
 export interface CategoryWhereInput {
@@ -481,6 +516,7 @@ export interface DonationAccountWhereInput {
   id?: IntFilter;
   name?: StringFilter;
   accountNumber?: StringFilter;
+  accountName?: StringFilter;
   bankName?: StringFilter;
   logoUrl?: StringFilter;
   donations?: DonationListRelationFilter;
@@ -490,6 +526,7 @@ export interface DonationAccountOrderByWithRelationInput {
   id?: SortOrder;
   name?: SortOrder;
   accountNumber?: SortOrder;
+  accountName?: SortOrder;
   bankName?: SortOrder;
   logoUrl?: SortOrder;
   donations?: DonationOrderByRelationAggregateInput;
@@ -503,6 +540,7 @@ export interface DonationAccountOrderByWithAggregationInput {
   id?: SortOrder;
   name?: SortOrder;
   accountNumber?: SortOrder;
+  accountName?: SortOrder;
   bankName?: SortOrder;
   logoUrl?: SortOrder;
   _count?: DonationAccountCountOrderByAggregateInput;
@@ -519,6 +557,7 @@ export interface DonationAccountScalarWhereWithAggregatesInput {
   id?: IntWithAggregatesFilter;
   name?: StringWithAggregatesFilter;
   accountNumber?: StringWithAggregatesFilter;
+  accountName?: StringWithAggregatesFilter;
   bankName?: StringWithAggregatesFilter;
   logoUrl?: StringWithAggregatesFilter;
 }
@@ -529,11 +568,14 @@ export interface DonationWhereInput {
   NOT?: DonationWhereInput[];
   id?: IntFilter;
   name?: StringFilter;
-  message?: StringNullableFilter;
+  hideName?: BoolFilter;
+  message?: StringFilter;
   amount?: FloatFilter;
   accountId?: IntFilter;
   account?: DonationAccountWhereInput;
   status?: EnumDonationStatusFilter;
+  cityName?: StringFilter;
+  type?: EnumDonationTypeFilter;
   approvedById?: IntNullableFilter;
   approvedBy?: UserWhereInput;
   createdAt?: DateTimeFilter;
@@ -543,11 +585,14 @@ export interface DonationWhereInput {
 export interface DonationOrderByWithRelationInput {
   id?: SortOrder;
   name?: SortOrder;
+  hideName?: SortOrder;
   message?: SortOrder;
   amount?: SortOrder;
   accountId?: SortOrder;
   account?: DonationAccountOrderByWithRelationInput;
   status?: SortOrder;
+  cityName?: SortOrder;
+  type?: SortOrder;
   approvedById?: SortOrder;
   approvedBy?: UserOrderByWithRelationInput;
   createdAt?: SortOrder;
@@ -561,10 +606,13 @@ export interface DonationWhereUniqueInput {
 export interface DonationOrderByWithAggregationInput {
   id?: SortOrder;
   name?: SortOrder;
+  hideName?: SortOrder;
   message?: SortOrder;
   amount?: SortOrder;
   accountId?: SortOrder;
   status?: SortOrder;
+  cityName?: SortOrder;
+  type?: SortOrder;
   approvedById?: SortOrder;
   createdAt?: SortOrder;
   updatedAt?: SortOrder;
@@ -581,10 +629,13 @@ export interface DonationScalarWhereWithAggregatesInput {
   NOT?: DonationScalarWhereWithAggregatesInput[];
   id?: IntWithAggregatesFilter;
   name?: StringWithAggregatesFilter;
-  message?: StringNullableWithAggregatesFilter;
+  hideName?: BoolWithAggregatesFilter;
+  message?: StringWithAggregatesFilter;
   amount?: FloatWithAggregatesFilter;
   accountId?: IntWithAggregatesFilter;
   status?: EnumDonationStatusWithAggregatesFilter;
+  cityName?: StringWithAggregatesFilter;
+  type?: EnumDonationTypeWithAggregatesFilter;
   approvedById?: IntNullableWithAggregatesFilter;
   createdAt?: DateTimeWithAggregatesFilter;
   updatedAt?: DateTimeWithAggregatesFilter;
@@ -785,6 +836,7 @@ export interface NewsCreateInput {
   wide?: string;
   content: string;
   description?: string;
+  shareCountMap: string;
 }
 
 export interface NewsUncheckedCreateInput {
@@ -801,6 +853,7 @@ export interface NewsUncheckedCreateInput {
   wide?: string;
   content: string;
   description?: string;
+  shareCountMap: string;
 }
 
 export interface NewsUpdateInput {
@@ -816,6 +869,7 @@ export interface NewsUpdateInput {
   wide?: NullableStringFieldUpdateOperationsInput;
   content?: StringFieldUpdateOperationsInput;
   description?: NullableStringFieldUpdateOperationsInput;
+  shareCountMap?: string;
 }
 
 export interface NewsUncheckedUpdateInput {
@@ -832,6 +886,7 @@ export interface NewsUncheckedUpdateInput {
   wide?: NullableStringFieldUpdateOperationsInput;
   content?: StringFieldUpdateOperationsInput;
   description?: NullableStringFieldUpdateOperationsInput;
+  shareCountMap?: string;
 }
 
 export interface NewsCreateManyInput {
@@ -847,6 +902,7 @@ export interface NewsCreateManyInput {
   wide?: string;
   content: string;
   description?: string;
+  shareCountMap: string;
 }
 
 export interface NewsUncheckedUpdateManyInput {
@@ -862,6 +918,7 @@ export interface NewsUncheckedUpdateManyInput {
   wide?: NullableStringFieldUpdateOperationsInput;
   content?: StringFieldUpdateOperationsInput;
   description?: NullableStringFieldUpdateOperationsInput;
+  shareCountMap?: string;
 }
 
 export interface CategoryCreateInput {
@@ -905,6 +962,7 @@ export interface CategoryUncheckedUpdateManyInput {
 export interface DonationAccountCreateInput {
   name: string;
   accountNumber: string;
+  accountName: string;
   bankName: string;
   logoUrl: string;
   donations?: DonationCreateNestedManyWithoutAccountInput;
@@ -914,6 +972,7 @@ export interface DonationAccountUncheckedCreateInput {
   id?: number;
   name: string;
   accountNumber: string;
+  accountName: string;
   bankName: string;
   logoUrl: string;
   donations?: DonationUncheckedCreateNestedManyWithoutAccountInput;
@@ -922,6 +981,7 @@ export interface DonationAccountUncheckedCreateInput {
 export interface DonationAccountUpdateInput {
   name?: StringFieldUpdateOperationsInput;
   accountNumber?: StringFieldUpdateOperationsInput;
+  accountName?: StringFieldUpdateOperationsInput;
   bankName?: StringFieldUpdateOperationsInput;
   logoUrl?: StringFieldUpdateOperationsInput;
   donations?: DonationUpdateManyWithoutAccountInput;
@@ -931,6 +991,7 @@ export interface DonationAccountUncheckedUpdateInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
   accountNumber?: StringFieldUpdateOperationsInput;
+  accountName?: StringFieldUpdateOperationsInput;
   bankName?: StringFieldUpdateOperationsInput;
   logoUrl?: StringFieldUpdateOperationsInput;
   donations?: DonationUncheckedUpdateManyWithoutAccountInput;
@@ -940,6 +1001,7 @@ export interface DonationAccountCreateManyInput {
   id?: number;
   name: string;
   accountNumber: string;
+  accountName: string;
   bankName: string;
   logoUrl: string;
 }
@@ -948,16 +1010,20 @@ export interface DonationAccountUncheckedUpdateManyInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
   accountNumber?: StringFieldUpdateOperationsInput;
+  accountName?: StringFieldUpdateOperationsInput;
   bankName?: StringFieldUpdateOperationsInput;
   logoUrl?: StringFieldUpdateOperationsInput;
 }
 
 export interface DonationCreateInput {
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   account: DonationAccountCreateNestedOneWithoutDonationsInput;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   approvedBy?: UserCreateNestedOneWithoutApprovedDonationsInput;
   createdAt?: undefined;
   updatedAt?: undefined;
@@ -966,10 +1032,13 @@ export interface DonationCreateInput {
 export interface DonationUncheckedCreateInput {
   id?: number;
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   accountId: number;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   approvedById?: number;
   createdAt?: undefined;
   updatedAt?: undefined;
@@ -977,10 +1046,13 @@ export interface DonationUncheckedCreateInput {
 
 export interface DonationUpdateInput {
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   account?: DonationAccountUpdateOneRequiredWithoutDonationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   approvedBy?: UserUpdateOneWithoutApprovedDonationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
@@ -989,10 +1061,13 @@ export interface DonationUpdateInput {
 export interface DonationUncheckedUpdateInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   accountId?: IntFieldUpdateOperationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   approvedById?: NullableIntFieldUpdateOperationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
@@ -1001,10 +1076,13 @@ export interface DonationUncheckedUpdateInput {
 export interface DonationCreateManyInput {
   id?: number;
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   accountId: number;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   approvedById?: number;
   createdAt?: undefined;
   updatedAt?: undefined;
@@ -1013,10 +1091,13 @@ export interface DonationCreateManyInput {
 export interface DonationUncheckedUpdateManyInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   accountId?: IntFieldUpdateOperationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   approvedById?: NullableIntFieldUpdateOperationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
@@ -1326,6 +1407,11 @@ export interface CategoryListRelationFilter {
   none?: CategoryWhereInput;
 }
 
+export interface JsonFilter {
+  equals?: string;
+  not?: string;
+}
+
 export interface CategoryOrderByRelationAggregateInput {
   _count?: SortOrder;
 }
@@ -1343,6 +1429,7 @@ export interface NewsCountOrderByAggregateInput {
   wide?: SortOrder;
   content?: SortOrder;
   description?: SortOrder;
+  shareCountMap?: SortOrder;
 }
 
 export interface NewsAvgOrderByAggregateInput {
@@ -1403,6 +1490,14 @@ export interface IntNullableWithAggregatesFilter {
   _max?: NestedIntNullableFilter;
 }
 
+export interface JsonWithAggregatesFilter {
+  equals?: string;
+  not?: string;
+  _count?: NestedIntFilter;
+  _min?: NestedJsonFilter;
+  _max?: NestedJsonFilter;
+}
+
 export interface CategoryCountOrderByAggregateInput {
   id?: SortOrder;
   name?: SortOrder;
@@ -1433,6 +1528,7 @@ export interface DonationAccountCountOrderByAggregateInput {
   id?: SortOrder;
   name?: SortOrder;
   accountNumber?: SortOrder;
+  accountName?: SortOrder;
   bankName?: SortOrder;
   logoUrl?: SortOrder;
 }
@@ -1445,6 +1541,7 @@ export interface DonationAccountMaxOrderByAggregateInput {
   id?: SortOrder;
   name?: SortOrder;
   accountNumber?: SortOrder;
+  accountName?: SortOrder;
   bankName?: SortOrder;
   logoUrl?: SortOrder;
 }
@@ -1453,6 +1550,7 @@ export interface DonationAccountMinOrderByAggregateInput {
   id?: SortOrder;
   name?: SortOrder;
   accountNumber?: SortOrder;
+  accountName?: SortOrder;
   bankName?: SortOrder;
   logoUrl?: SortOrder;
 }
@@ -1484,13 +1582,23 @@ export interface EnumDonationStatusFilter {
   not?: NestedEnumDonationStatusFilter;
 }
 
+export interface EnumDonationTypeFilter {
+  equals?: DonationType;
+  in?: DonationType[];
+  notIn?: DonationType[];
+  not?: NestedEnumDonationTypeFilter;
+}
+
 export interface DonationCountOrderByAggregateInput {
   id?: SortOrder;
   name?: SortOrder;
+  hideName?: SortOrder;
   message?: SortOrder;
   amount?: SortOrder;
   accountId?: SortOrder;
   status?: SortOrder;
+  cityName?: SortOrder;
+  type?: SortOrder;
   approvedById?: SortOrder;
   createdAt?: SortOrder;
   updatedAt?: SortOrder;
@@ -1506,10 +1614,13 @@ export interface DonationAvgOrderByAggregateInput {
 export interface DonationMaxOrderByAggregateInput {
   id?: SortOrder;
   name?: SortOrder;
+  hideName?: SortOrder;
   message?: SortOrder;
   amount?: SortOrder;
   accountId?: SortOrder;
   status?: SortOrder;
+  cityName?: SortOrder;
+  type?: SortOrder;
   approvedById?: SortOrder;
   createdAt?: SortOrder;
   updatedAt?: SortOrder;
@@ -1518,10 +1629,13 @@ export interface DonationMaxOrderByAggregateInput {
 export interface DonationMinOrderByAggregateInput {
   id?: SortOrder;
   name?: SortOrder;
+  hideName?: SortOrder;
   message?: SortOrder;
   amount?: SortOrder;
   accountId?: SortOrder;
   status?: SortOrder;
+  cityName?: SortOrder;
+  type?: SortOrder;
   approvedById?: SortOrder;
   createdAt?: SortOrder;
   updatedAt?: SortOrder;
@@ -1558,6 +1672,16 @@ export interface EnumDonationStatusWithAggregatesFilter {
   _count?: NestedIntFilter;
   _min?: NestedEnumDonationStatusFilter;
   _max?: NestedEnumDonationStatusFilter;
+}
+
+export interface EnumDonationTypeWithAggregatesFilter {
+  equals?: DonationType;
+  in?: DonationType[];
+  notIn?: DonationType[];
+  not?: NestedEnumDonationTypeWithAggregatesFilter;
+  _count?: NestedIntFilter;
+  _min?: NestedEnumDonationTypeFilter;
+  _max?: NestedEnumDonationTypeFilter;
 }
 
 export interface NewsCreateNestedManyWithoutAuthorInput {
@@ -1846,6 +1970,10 @@ export interface EnumDonationStatusFieldUpdateOperationsInput {
   set?: DonationStatus;
 }
 
+export interface EnumDonationTypeFieldUpdateOperationsInput {
+  set?: DonationType;
+}
+
 export interface UserUpdateOneWithoutApprovedDonationsInput {
   create?: UserUncheckedCreateWithoutApprovedDonationsInput;
   connectOrCreate?: UserCreateOrConnectWithoutApprovedDonationsInput;
@@ -2049,11 +2177,23 @@ export interface NestedFloatNullableFilter {
   not?: NestedFloatNullableFilter;
 }
 
+export interface NestedJsonFilter {
+  equals?: string;
+  not?: string;
+}
+
 export interface NestedEnumDonationStatusFilter {
   equals?: DonationStatus;
   in?: DonationStatus[];
   notIn?: DonationStatus[];
   not?: NestedEnumDonationStatusFilter;
+}
+
+export interface NestedEnumDonationTypeFilter {
+  equals?: DonationType;
+  in?: DonationType[];
+  notIn?: DonationType[];
+  not?: NestedEnumDonationTypeFilter;
 }
 
 export interface NestedFloatWithAggregatesFilter {
@@ -2082,6 +2222,16 @@ export interface NestedEnumDonationStatusWithAggregatesFilter {
   _max?: NestedEnumDonationStatusFilter;
 }
 
+export interface NestedEnumDonationTypeWithAggregatesFilter {
+  equals?: DonationType;
+  in?: DonationType[];
+  notIn?: DonationType[];
+  not?: NestedEnumDonationTypeWithAggregatesFilter;
+  _count?: NestedIntFilter;
+  _min?: NestedEnumDonationTypeFilter;
+  _max?: NestedEnumDonationTypeFilter;
+}
+
 export interface NewsCreateWithoutAuthorInput {
   published?: boolean;
   title: string;
@@ -2094,6 +2244,7 @@ export interface NewsCreateWithoutAuthorInput {
   wide?: string;
   content: string;
   description?: string;
+  shareCountMap: string;
 }
 
 export interface NewsUncheckedCreateWithoutAuthorInput {
@@ -2109,6 +2260,7 @@ export interface NewsUncheckedCreateWithoutAuthorInput {
   wide?: string;
   content: string;
   description?: string;
+  shareCountMap: string;
 }
 
 export interface NewsCreateOrConnectWithoutAuthorInput {
@@ -2123,10 +2275,13 @@ export interface NewsCreateManyAuthorInputEnvelope {
 
 export interface DonationCreateWithoutApprovedByInput {
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   account: DonationAccountCreateNestedOneWithoutDonationsInput;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   createdAt?: undefined;
   updatedAt?: undefined;
 }
@@ -2134,10 +2289,13 @@ export interface DonationCreateWithoutApprovedByInput {
 export interface DonationUncheckedCreateWithoutApprovedByInput {
   id?: number;
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   accountId: number;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   createdAt?: undefined;
   updatedAt?: undefined;
 }
@@ -2184,6 +2342,7 @@ export interface NewsScalarWhereInput {
   wide?: StringNullableFilter;
   content?: StringFilter;
   description?: StringNullableFilter;
+  shareCountMap?: JsonFilter;
 }
 
 export interface DonationUpsertWithWhereUniqueWithoutApprovedByInput {
@@ -2208,10 +2367,13 @@ export interface DonationScalarWhereInput {
   NOT?: DonationScalarWhereInput[];
   id?: IntFilter;
   name?: StringFilter;
-  message?: StringNullableFilter;
+  hideName?: BoolFilter;
+  message?: StringFilter;
   amount?: FloatFilter;
   accountId?: IntFilter;
   status?: EnumDonationStatusFilter;
+  cityName?: StringFilter;
+  type?: EnumDonationTypeFilter;
   approvedById?: IntNullableFilter;
   createdAt?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
@@ -2326,6 +2488,7 @@ export interface NewsCreateWithoutCategoriesInput {
   wide?: string;
   content: string;
   description?: string;
+  shareCountMap: string;
 }
 
 export interface NewsUncheckedCreateWithoutCategoriesInput {
@@ -2341,6 +2504,7 @@ export interface NewsUncheckedCreateWithoutCategoriesInput {
   wide?: string;
   content: string;
   description?: string;
+  shareCountMap: string;
 }
 
 export interface NewsCreateOrConnectWithoutCategoriesInput {
@@ -2366,9 +2530,12 @@ export interface NewsUpdateManyWithWhereWithoutCategoriesInput {
 
 export interface DonationCreateWithoutAccountInput {
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   approvedBy?: UserCreateNestedOneWithoutApprovedDonationsInput;
   createdAt?: undefined;
   updatedAt?: undefined;
@@ -2377,9 +2544,12 @@ export interface DonationCreateWithoutAccountInput {
 export interface DonationUncheckedCreateWithoutAccountInput {
   id?: number;
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   approvedById?: number;
   createdAt?: undefined;
   updatedAt?: undefined;
@@ -2414,6 +2584,7 @@ export interface DonationUpdateManyWithWhereWithoutAccountInput {
 export interface DonationAccountCreateWithoutDonationsInput {
   name: string;
   accountNumber: string;
+  accountName: string;
   bankName: string;
   logoUrl: string;
 }
@@ -2422,6 +2593,7 @@ export interface DonationAccountUncheckedCreateWithoutDonationsInput {
   id?: number;
   name: string;
   accountNumber: string;
+  accountName: string;
   bankName: string;
   logoUrl: string;
 }
@@ -2467,6 +2639,7 @@ export interface DonationAccountUpsertWithoutDonationsInput {
 export interface DonationAccountUpdateWithoutDonationsInput {
   name?: StringFieldUpdateOperationsInput;
   accountNumber?: StringFieldUpdateOperationsInput;
+  accountName?: StringFieldUpdateOperationsInput;
   bankName?: StringFieldUpdateOperationsInput;
   logoUrl?: StringFieldUpdateOperationsInput;
 }
@@ -2475,6 +2648,7 @@ export interface DonationAccountUncheckedUpdateWithoutDonationsInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
   accountNumber?: StringFieldUpdateOperationsInput;
+  accountName?: StringFieldUpdateOperationsInput;
   bankName?: StringFieldUpdateOperationsInput;
   logoUrl?: StringFieldUpdateOperationsInput;
 }
@@ -2519,15 +2693,19 @@ export interface NewsCreateManyAuthorInput {
   wide?: string;
   content: string;
   description?: string;
+  shareCountMap: string;
 }
 
 export interface DonationCreateManyApprovedByInput {
   id?: number;
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   accountId: number;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   createdAt?: undefined;
   updatedAt?: undefined;
 }
@@ -2544,6 +2722,7 @@ export interface NewsUpdateWithoutAuthorInput {
   wide?: NullableStringFieldUpdateOperationsInput;
   content?: StringFieldUpdateOperationsInput;
   description?: NullableStringFieldUpdateOperationsInput;
+  shareCountMap?: string;
 }
 
 export interface NewsUncheckedUpdateWithoutAuthorInput {
@@ -2559,6 +2738,7 @@ export interface NewsUncheckedUpdateWithoutAuthorInput {
   wide?: NullableStringFieldUpdateOperationsInput;
   content?: StringFieldUpdateOperationsInput;
   description?: NullableStringFieldUpdateOperationsInput;
+  shareCountMap?: string;
 }
 
 export interface NewsUncheckedUpdateManyWithoutNewsInput {
@@ -2573,14 +2753,18 @@ export interface NewsUncheckedUpdateManyWithoutNewsInput {
   wide?: NullableStringFieldUpdateOperationsInput;
   content?: StringFieldUpdateOperationsInput;
   description?: NullableStringFieldUpdateOperationsInput;
+  shareCountMap?: string;
 }
 
 export interface DonationUpdateWithoutApprovedByInput {
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   account?: DonationAccountUpdateOneRequiredWithoutDonationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
 }
@@ -2588,10 +2772,13 @@ export interface DonationUpdateWithoutApprovedByInput {
 export interface DonationUncheckedUpdateWithoutApprovedByInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   accountId?: IntFieldUpdateOperationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
 }
@@ -2599,10 +2786,13 @@ export interface DonationUncheckedUpdateWithoutApprovedByInput {
 export interface DonationUncheckedUpdateManyWithoutApprovedDonationsInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   accountId?: IntFieldUpdateOperationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
 }
@@ -2636,6 +2826,7 @@ export interface NewsUpdateWithoutCategoriesInput {
   wide?: NullableStringFieldUpdateOperationsInput;
   content?: StringFieldUpdateOperationsInput;
   description?: NullableStringFieldUpdateOperationsInput;
+  shareCountMap?: string;
 }
 
 export interface NewsUncheckedUpdateWithoutCategoriesInput {
@@ -2651,14 +2842,18 @@ export interface NewsUncheckedUpdateWithoutCategoriesInput {
   wide?: NullableStringFieldUpdateOperationsInput;
   content?: StringFieldUpdateOperationsInput;
   description?: NullableStringFieldUpdateOperationsInput;
+  shareCountMap?: string;
 }
 
 export interface DonationCreateManyAccountInput {
   id?: number;
   name: string;
+  hideName?: boolean;
   message?: string;
   amount: number;
   status: DonationStatus;
+  cityName: string;
+  type: DonationType;
   approvedById?: number;
   createdAt?: undefined;
   updatedAt?: undefined;
@@ -2666,9 +2861,12 @@ export interface DonationCreateManyAccountInput {
 
 export interface DonationUpdateWithoutAccountInput {
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   approvedBy?: UserUpdateOneWithoutApprovedDonationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
@@ -2677,9 +2875,12 @@ export interface DonationUpdateWithoutAccountInput {
 export interface DonationUncheckedUpdateWithoutAccountInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   approvedById?: NullableIntFieldUpdateOperationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
@@ -2688,9 +2889,12 @@ export interface DonationUncheckedUpdateWithoutAccountInput {
 export interface DonationUncheckedUpdateManyWithoutDonationsInput {
   id?: IntFieldUpdateOperationsInput;
   name?: StringFieldUpdateOperationsInput;
-  message?: NullableStringFieldUpdateOperationsInput;
+  hideName?: BoolFieldUpdateOperationsInput;
+  message?: StringFieldUpdateOperationsInput;
   amount?: FloatFieldUpdateOperationsInput;
   status?: EnumDonationStatusFieldUpdateOperationsInput;
+  cityName?: StringFieldUpdateOperationsInput;
+  type?: EnumDonationTypeFieldUpdateOperationsInput;
   approvedById?: NullableIntFieldUpdateOperationsInput;
   createdAt?: DateTimeFieldUpdateOperationsInput;
   updatedAt?: DateTimeFieldUpdateOperationsInput;
@@ -2891,6 +3095,7 @@ export interface NewsCountAggregateOutputType {
   wide: number;
   content: number;
   description: number;
+  shareCountMap: number;
   _all: number;
 }
 
@@ -2975,6 +3180,7 @@ export interface DonationAccountCountAggregateOutputType {
   id: number;
   name: number;
   accountNumber: number;
+  accountName: number;
   bankName: number;
   logoUrl: number;
   _all: number;
@@ -2992,6 +3198,7 @@ export interface DonationAccountMinAggregateOutputType {
   id: Maybe<number>;
   name: Maybe<string>;
   accountNumber: Maybe<string>;
+  accountName: Maybe<string>;
   bankName: Maybe<string>;
   logoUrl: Maybe<string>;
 }
@@ -3000,6 +3207,7 @@ export interface DonationAccountMaxAggregateOutputType {
   id: Maybe<number>;
   name: Maybe<string>;
   accountNumber: Maybe<string>;
+  accountName: Maybe<string>;
   bankName: Maybe<string>;
   logoUrl: Maybe<string>;
 }
@@ -3007,10 +3215,13 @@ export interface DonationAccountMaxAggregateOutputType {
 export interface DonationCountAggregateOutputType {
   id: number;
   name: number;
+  hideName: number;
   message: number;
   amount: number;
   accountId: number;
   status: number;
+  cityName: number;
+  type: number;
   approvedById: number;
   createdAt: number;
   updatedAt: number;
@@ -3034,10 +3245,13 @@ export interface DonationSumAggregateOutputType {
 export interface DonationMinAggregateOutputType {
   id: Maybe<number>;
   name: Maybe<string>;
+  hideName: Maybe<boolean>;
   message: Maybe<string>;
   amount: Maybe<number>;
   accountId: Maybe<number>;
   status: Maybe<DonationStatus>;
+  cityName: Maybe<string>;
+  type: Maybe<DonationType>;
   approvedById: Maybe<number>;
   createdAt: Maybe<undefined>;
   updatedAt: Maybe<undefined>;
@@ -3046,91 +3260,16 @@ export interface DonationMinAggregateOutputType {
 export interface DonationMaxAggregateOutputType {
   id: Maybe<number>;
   name: Maybe<string>;
+  hideName: Maybe<boolean>;
   message: Maybe<string>;
   amount: Maybe<number>;
   accountId: Maybe<number>;
   status: Maybe<DonationStatus>;
+  cityName: Maybe<string>;
+  type: Maybe<DonationType>;
   approvedById: Maybe<number>;
   createdAt: Maybe<undefined>;
   updatedAt: Maybe<undefined>;
-}
-
-export interface findUniqueImageGalleryArgs {
-  where: ImageGalleryWhereUniqueInput;
-}
-
-export interface findFirstImageGalleryArgs {
-  where?: ImageGalleryWhereInput;
-  orderBy?: ImageGalleryOrderByWithRelationInput[];
-  cursor?: ImageGalleryWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: ImageGalleryScalarFieldEnum[];
-}
-
-export interface findManyImageGalleryArgs {
-  where?: ImageGalleryWhereInput;
-  orderBy?: ImageGalleryOrderByWithRelationInput[];
-  cursor?: ImageGalleryWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: ImageGalleryScalarFieldEnum[];
-}
-
-export interface findManyImageGalleryCountArgs {
-  where?: ImageGalleryWhereInput;
-  orderBy?: ImageGalleryOrderByWithRelationInput[];
-  cursor?: ImageGalleryWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: ImageGalleryScalarFieldEnum[];
-}
-
-export interface aggregateImageGalleryArgs {
-  where?: ImageGalleryWhereInput;
-  orderBy?: ImageGalleryOrderByWithRelationInput[];
-  cursor?: ImageGalleryWhereUniqueInput;
-  take?: number;
-  skip?: number;
-}
-
-export interface findUniqueMemberArgs {
-  where: MemberWhereUniqueInput;
-}
-
-export interface findFirstMemberArgs {
-  where?: MemberWhereInput;
-  orderBy?: MemberOrderByWithRelationInput[];
-  cursor?: MemberWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: MemberScalarFieldEnum[];
-}
-
-export interface findManyMemberArgs {
-  where?: MemberWhereInput;
-  orderBy?: MemberOrderByWithRelationInput[];
-  cursor?: MemberWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: MemberScalarFieldEnum[];
-}
-
-export interface findManyMemberCountArgs {
-  where?: MemberWhereInput;
-  orderBy?: MemberOrderByWithRelationInput[];
-  cursor?: MemberWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: MemberScalarFieldEnum[];
-}
-
-export interface aggregateMemberArgs {
-  where?: MemberWhereInput;
-  orderBy?: MemberOrderByWithRelationInput[];
-  cursor?: MemberWhereUniqueInput;
-  take?: number;
-  skip?: number;
 }
 
 export interface findUniqueDonationArgs {
@@ -3289,6 +3428,84 @@ export interface aggregateNewsArgs {
   skip?: number;
 }
 
+export interface findUniqueImageGalleryArgs {
+  where: ImageGalleryWhereUniqueInput;
+}
+
+export interface findFirstImageGalleryArgs {
+  where?: ImageGalleryWhereInput;
+  orderBy?: ImageGalleryOrderByWithRelationInput[];
+  cursor?: ImageGalleryWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: ImageGalleryScalarFieldEnum[];
+}
+
+export interface findManyImageGalleryArgs {
+  where?: ImageGalleryWhereInput;
+  orderBy?: ImageGalleryOrderByWithRelationInput[];
+  cursor?: ImageGalleryWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: ImageGalleryScalarFieldEnum[];
+}
+
+export interface findManyImageGalleryCountArgs {
+  where?: ImageGalleryWhereInput;
+  orderBy?: ImageGalleryOrderByWithRelationInput[];
+  cursor?: ImageGalleryWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: ImageGalleryScalarFieldEnum[];
+}
+
+export interface aggregateImageGalleryArgs {
+  where?: ImageGalleryWhereInput;
+  orderBy?: ImageGalleryOrderByWithRelationInput[];
+  cursor?: ImageGalleryWhereUniqueInput;
+  take?: number;
+  skip?: number;
+}
+
+export interface findUniqueMemberArgs {
+  where: MemberWhereUniqueInput;
+}
+
+export interface findFirstMemberArgs {
+  where?: MemberWhereInput;
+  orderBy?: MemberOrderByWithRelationInput[];
+  cursor?: MemberWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: MemberScalarFieldEnum[];
+}
+
+export interface findManyMemberArgs {
+  where?: MemberWhereInput;
+  orderBy?: MemberOrderByWithRelationInput[];
+  cursor?: MemberWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: MemberScalarFieldEnum[];
+}
+
+export interface findManyMemberCountArgs {
+  where?: MemberWhereInput;
+  orderBy?: MemberOrderByWithRelationInput[];
+  cursor?: MemberWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: MemberScalarFieldEnum[];
+}
+
+export interface aggregateMemberArgs {
+  where?: MemberWhereInput;
+  orderBy?: MemberOrderByWithRelationInput[];
+  cursor?: MemberWhereUniqueInput;
+  take?: number;
+  skip?: number;
+}
+
 export interface findUniqueUserArgs {
   where: UserWhereUniqueInput;
 }
@@ -3328,61 +3545,9 @@ export interface aggregateUserArgs {
   skip?: number;
 }
 
-export interface createOneImageGalleryArgs {
-  data: ImageGalleryCreateInput;
-}
+export interface getEmasPriceArgs {}
 
-export interface updateOneImageGalleryArgs {
-  data: ImageGalleryUpdateInput;
-  where: ImageGalleryWhereUniqueInput;
-}
-
-export interface upsertOneImageGalleryArgs {
-  where: ImageGalleryWhereUniqueInput;
-  create: ImageGalleryCreateInput;
-  update: ImageGalleryUpdateInput;
-}
-
-export interface deleteOneImageGalleryArgs {
-  where: ImageGalleryWhereUniqueInput;
-}
-
-export interface updateManyImageGalleryArgs {
-  data: ImageGalleryUpdateManyMutationInput;
-  where?: ImageGalleryWhereInput;
-}
-
-export interface deleteManyImageGalleryArgs {
-  where?: ImageGalleryWhereInput;
-}
-
-export interface createOneMemberArgs {
-  data: MemberCreateInput;
-}
-
-export interface updateOneMemberArgs {
-  data: MemberUpdateInput;
-  where: MemberWhereUniqueInput;
-}
-
-export interface upsertOneMemberArgs {
-  where: MemberWhereUniqueInput;
-  create: MemberCreateInput;
-  update: MemberUpdateInput;
-}
-
-export interface deleteOneMemberArgs {
-  where: MemberWhereUniqueInput;
-}
-
-export interface updateManyMemberArgs {
-  data: MemberUpdateManyMutationInput;
-  where?: MemberWhereInput;
-}
-
-export interface deleteManyMemberArgs {
-  where?: MemberWhereInput;
-}
+export interface getBerasPriceArgs {}
 
 export interface createOneDonationArgs {
   data: DonationCreateInput;
@@ -3494,6 +3659,62 @@ export interface updateManyNewsArgs {
 
 export interface deleteManyNewsArgs {
   where?: NewsWhereInput;
+}
+
+export interface createOneImageGalleryArgs {
+  data: ImageGalleryCreateInput;
+}
+
+export interface updateOneImageGalleryArgs {
+  data: ImageGalleryUpdateInput;
+  where: ImageGalleryWhereUniqueInput;
+}
+
+export interface upsertOneImageGalleryArgs {
+  where: ImageGalleryWhereUniqueInput;
+  create: ImageGalleryCreateInput;
+  update: ImageGalleryUpdateInput;
+}
+
+export interface deleteOneImageGalleryArgs {
+  where: ImageGalleryWhereUniqueInput;
+}
+
+export interface updateManyImageGalleryArgs {
+  data: ImageGalleryUpdateManyMutationInput;
+  where?: ImageGalleryWhereInput;
+}
+
+export interface deleteManyImageGalleryArgs {
+  where?: ImageGalleryWhereInput;
+}
+
+export interface createOneMemberArgs {
+  data: MemberCreateInput;
+}
+
+export interface updateOneMemberArgs {
+  data: MemberUpdateInput;
+  where: MemberWhereUniqueInput;
+}
+
+export interface upsertOneMemberArgs {
+  where: MemberWhereUniqueInput;
+  create: MemberCreateInput;
+  update: MemberUpdateInput;
+}
+
+export interface deleteOneMemberArgs {
+  where: MemberWhereUniqueInput;
+}
+
+export interface updateManyMemberArgs {
+  data: MemberUpdateManyMutationInput;
+  where?: MemberWhereInput;
+}
+
+export interface deleteManyMemberArgs {
+  where?: MemberWhereInput;
 }
 
 export interface createOneUserArgs {

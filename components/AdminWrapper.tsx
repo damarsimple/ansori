@@ -1,91 +1,91 @@
-import { useState } from 'react'
-import { styled, useTheme } from '@mui/material/styles'
-import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
-import CssBaseline from '@mui/material/CssBaseline'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
-import MenuIcon from '@mui/icons-material/Menu'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import ListItem from '@mui/material/ListItem'
-import Icon from '@mui/material/Icon'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import Link from 'next/link'
+import { useState } from "react";
+import { styled, useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import CssBaseline from "@mui/material/CssBaseline";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ListItem from "@mui/material/ListItem";
+import Icon from "@mui/material/Icon";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Link from "next/link";
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
-  open?: boolean
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
+  open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(1),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginLeft: `-${drawerWidth}px`,
   ...(open && {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
   }),
-}))
+}));
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean
+  open?: boolean;
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(['margin', 'width'], {
+  transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-}))
+}));
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
-}))
+  justifyContent: "flex-end",
+}));
 
 export default function PersistentDrawerLeft({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const theme = useTheme()
-  const [open, setOpen] = useState(true)
+  const theme = useTheme();
+  const [open, setOpen] = useState(true);
 
   const handleDrawerOpen = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleDrawerClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -94,7 +94,7 @@ export default function PersistentDrawerLeft({
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+            sx={{ mr: 2, ...(open && { display: "none" }) }}
           >
             <MenuIcon />
           </IconButton>
@@ -107,9 +107,9 @@ export default function PersistentDrawerLeft({
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
-            boxSizing: 'border-box',
+            boxSizing: "border-box",
           },
         }}
         variant="persistent"
@@ -118,7 +118,7 @@ export default function PersistentDrawerLeft({
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? (
+            {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
             ) : (
               <ChevronRightIcon />
@@ -129,34 +129,39 @@ export default function PersistentDrawerLeft({
         <List>
           {[
             {
-              title: 'Dashboard',
-              path: '/admin/',
-              icon: 'dashboard',
+              title: "Dashboard",
+              path: "/admin/",
+              icon: "dashboard",
             },
             {
-              title: 'Berita',
-              path: '/admin/news',
-              icon: 'feed',
+              title: "Berita",
+              path: "/admin/news",
+              icon: "feed",
             },
             {
-              title: 'Kategori',
-              path: '/admin/categories',
-              icon: 'category',
+              title: "Galeri",
+              path: "/admin/gallery/",
+              icon: "collections",
             },
             {
-              title: 'Donasi',
-              path: '/donations/',
-              icon: 'paid',
+              title: "Kategori",
+              path: "/admin/categories",
+              icon: "category",
             },
             {
-              title: 'Akun Donasi',
-              path: '/donationaccount/',
-              icon: 'savings',
+              title: "Donasi",
+              path: "/admin/donations/",
+              icon: "paid",
             },
             {
-              title: 'Anggota',
-              path: '/members/',
-              icon: 'people',
+              title: "Akun Donasi",
+              path: "/admin/accountdonations/",
+              icon: "savings",
+            },
+            {
+              title: "Anggota",
+              path: "/admin/members/",
+              icon: "people",
             },
           ].map(({ title, path, icon }) => (
             <Link key={title} href={path}>
@@ -177,5 +182,5 @@ export default function PersistentDrawerLeft({
         {children}
       </Main>
     </Box>
-  )
+  );
 }

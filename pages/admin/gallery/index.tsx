@@ -1,16 +1,17 @@
 import { gql } from "@apollo/client";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import AdminWrapper from "../../../components/AdminWrapper";
 import MUITable from "../../../components/MUITable";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
-export default function DonationAccount() {
+export default function ImageGallery() {
   return (
     <AdminWrapper>
-      <Link href="/admin/accountdonations/create">
+      <Link href="/admin/gallery/create">
         <a>
           <Button fullWidth variant="contained">
-            Buat Akun Donasi
+            Buat Gambar Galeri Baru
           </Button>
         </a>
       </Link>
@@ -22,11 +23,11 @@ export default function DonationAccount() {
           },
         ]}
         name={"News"}
-        keys={"findManyDonationAccount"}
-        countKeys={"findManyDonationAccountCount"}
+        keys={"findManyImageGallery"}
+        countKeys={"findManyImageGalleryCount"}
         countQuery={gql`
-          query FindManyDonationAccountCount {
-            findManyDonationAccountCount
+          query FindManyImageGalleryCount {
+            findManyImageGalleryCount
           }
         `}
         action={["edit", "delete"]}
@@ -34,10 +35,10 @@ export default function DonationAccount() {
           query (
             $take: Int
             $skip: Int
-            $orderBy: [DonationAccountOrderByWithRelationInput]
-            $where: DonationAccountWhereInput
+            $orderBy: [ImageGalleryOrderByWithRelationInput]
+            $where: ImageGalleryWhereInput
           ) {
-            findManyDonationAccount(
+            findManyImageGallery(
               take: $take
               skip: $skip
               orderBy: $orderBy

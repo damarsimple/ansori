@@ -1,4 +1,4 @@
-import { Edit, RemoveRedEye } from '@mui/icons-material'
+import { Edit, RemoveRedEye } from "@mui/icons-material";
 import {
   Paper,
   Box,
@@ -12,50 +12,52 @@ import {
   TablePagination,
   Typography,
   TextField,
-} from '@mui/material'
-import React, { useState } from 'react'
-import get from 'lodash/get'
-import { tooltipClasses, TooltipProps } from '@mui/material/Tooltip'
-import { alpha, styled } from '@mui/material/styles'
-import TableHead from '@mui/material/TableHead'
-import TableSortLabel from '@mui/material/TableSortLabel'
-import Toolbar from '@mui/material/Toolbar'
-import Tooltip from '@mui/material/Tooltip'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { visuallyHidden } from '@mui/utils'
-import { toast } from 'react-toastify'
-import { DocumentNode, useQuery } from '@apollo/client'
-import { client } from '../modules/client'
-import { useRouter } from 'next/router'
+} from "@mui/material";
+import React, { useState } from "react";
+import get from "lodash/get";
+import { tooltipClasses, TooltipProps } from "@mui/material/Tooltip";
+import { alpha, styled } from "@mui/material/styles";
+import TableHead from "@mui/material/TableHead";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { visuallyHidden } from "@mui/utils";
+import { toast } from "react-toastify";
+import { DocumentNode, useQuery } from "@apollo/client";
+import { client } from "../modules/client";
+import { useRouter } from "next/router";
+import { money } from "../utils";
 
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: '#f5f5f9',
-    color: 'rgba(0, 0, 0, 0.87)',
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
     maxWidth: 220,
     fontSize: theme.typography.pxToRem(12),
-    border: '1px solid #dadde9',
+    border: "1px solid #dadde9",
   },
-}))
+}));
 interface BaseModel {
-  id: number
+  id: number;
 }
 
-type Action = 'edit' | 'delete'
+type Action = "edit" | "delete";
 
 interface TableProp<T> {
-  headcells: HeadCell<T>[]
-  action?: Action[]
-  name: string
-  deleteQuery?: DocumentNode
-  query: DocumentNode
-  countQuery: DocumentNode
-  keys: string
-  countKeys: string
-  TooltipChildren?: (row: T) => React.ReactNode
-  onEdit?: (row: T) => void
+  headcells: HeadCell<T>[];
+  action?: Action[];
+  name: string;
+  deleteQuery?: DocumentNode;
+  query: DocumentNode;
+  countQuery: DocumentNode;
+  keys: string;
+  countKeys: string;
+  TooltipChildren?: (row: T) => React.ReactNode;
+  onEdit?: (row: T) => void;
+  disableSelection?: boolean;
 }
 
 export default function MUITable<T extends BaseModel>({
@@ -69,64 +71,67 @@ export default function MUITable<T extends BaseModel>({
   countQuery,
   countKeys,
   onEdit,
+  disableSelection,
 }: TableProp<T>) {
-  const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof T>('id')
-  const [selected, setSelected] = useState<readonly number[]>([])
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<keyof T>("id");
+  const [selected, setSelected] = useState<readonly number[]>([]);
 
   const handleRequestSort = (
     _: React.MouseEvent<unknown>,
-    property: keyof T,
+    property: keyof T
   ) => {
-    const isAsc = orderBy === property && order === 'asc'
-    setOrder(isAsc ? 'desc' : 'asc')
-    setOrderBy(property)
-  }
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.id)
-      setSelected(newSelecteds)
-      return
+      const newSelecteds = rows.map((n) => n.id);
+      setSelected(newSelecteds);
+      return;
     }
-    setSelected([])
-  }
+    setSelected([]);
+  };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: number) => {
-    const selectedIndex = selected.indexOf(name)
-    let newSelected: readonly number[] = []
+    if (disableSelection) return;
+
+    const selectedIndex = selected.indexOf(name);
+    let newSelected: readonly number[] = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name)
+      newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1))
+      newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1))
+      newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      )
+        selected.slice(selectedIndex + 1)
+      );
     }
 
-    setSelected(newSelected)
-  }
+    setSelected(newSelected);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
-  const isSelected = (name: number) => selected.indexOf(name) !== -1
+  const isSelected = (name: number) => selected.indexOf(name) !== -1;
 
   const handleSelectedDelete = () => {
-    toast.info(`${selected.length} ${name.toLowerCase()}s will be deleted`)
+    toast.info(`${selected.length} ${name.toLowerCase()}s will be deleted`);
 
     deleteQuery &&
       client.query({
@@ -138,21 +143,21 @@ export default function MUITable<T extends BaseModel>({
             },
           },
         },
-      })
+      });
 
-    setSelected([])
-  }
+    setSelected([]);
+  };
 
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(25)
-  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [search, setSearch] = useState("");
   const { data, loading, error } = useQuery(query, {
     variables: {
       where: {
         ...(search.length !== 0 && {
           name: {
             contains: search,
-            mode: 'insensitive',
+            mode: "insensitive",
           },
         }),
       },
@@ -164,26 +169,44 @@ export default function MUITable<T extends BaseModel>({
         },
       ],
     },
-  })
+  });
 
   const handleSearch = (e: string) => {
-    setSearch(e)
-  }
+    setSearch(e);
+  };
 
-  const { data: cc } = useQuery(countQuery)
+  const { data: cc } = useQuery(countQuery);
 
-  const rows: T[] = get(data, keys, [])
-  const count: number = get(cc, countKeys, 0)
+  const rows: T[] = get(data, keys, []);
+  const count: number = get(cc, countKeys, 0);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  const { push } = useRouter()
+  const formatter = (e: HeadCell<T>, row: T) => {
+    const val = row[e.name];
+
+    if (e.formatter == "function" && e.formatterFunction) {
+      return e.formatterFunction(row);
+    }
+
+    if (typeof e.formatter == "string") {
+      switch (e.formatter) {
+        case "currency":
+          //@ts-ignore
+          return money.format(typeof val == "string" ? parseInt(val) : val);
+        default:
+          return row[e.name];
+      }
+    }
+
+    return val;
+  };
 
   return (
     <Paper sx={{ p: 1 }}>
-      <Box sx={{ width: '100%' }}>
+      <Box sx={{ width: "100%" }}>
         <EnhancedTableToolbar
           numSelected={selected.length}
           handleSelectedDelete={handleSelectedDelete}
@@ -194,7 +217,7 @@ export default function MUITable<T extends BaseModel>({
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={'small'}
+            size={"small"}
           >
             <EnhancedTableHead<T>
               headcells={headcells}
@@ -206,11 +229,12 @@ export default function MUITable<T extends BaseModel>({
               rowCount={rows.length}
               name={name}
               action={action}
+              disableSelection={disableSelection}
             />
             <TableBody>
               {rows.map((row, index) => {
-                const isItemSelected = isSelected(row.id)
-                const labelId = `enhanced-table-checkbox-${index}`
+                const isItemSelected = isSelected(row.id);
+                const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <HtmlTooltip
@@ -232,8 +256,11 @@ export default function MUITable<T extends BaseModel>({
                         padding="checkbox"
                         onClick={(event) => handleClick(event, row.id)}
                       >
-                        <Checkbox color="primary" checked={isItemSelected} />
+                        {!disableSelection && (
+                          <Checkbox color="primary" checked={isItemSelected} />
+                        )}
                       </TableCell>
+
                       <TableCell
                         component="th"
                         id={labelId}
@@ -249,13 +276,13 @@ export default function MUITable<T extends BaseModel>({
                           scope="row"
                           key={`${row.id}`}
                         >
-                          {row[headcell.name]}
+                          {formatter(headcell, row)}
                         </TableCell>
                       ))}
 
                       {action && (
                         <TableCell component="th" id={labelId} scope="row">
-                          {action.includes('edit') && (
+                          {action.includes("edit") && (
                             <IconButton onClick={() => onEdit && onEdit(row)}>
                               <Edit />
                             </IconButton>
@@ -264,7 +291,7 @@ export default function MUITable<T extends BaseModel>({
                       )}
                     </TableRow>
                   </HtmlTooltip>
-                )
+                );
               })}
               {loading && (
                 <TableRow
@@ -289,28 +316,31 @@ export default function MUITable<T extends BaseModel>({
         />
       </Box>
     </Paper>
-  )
+  );
 }
 
-type Order = 'asc' | 'desc'
+type Order = "asc" | "desc";
 
 interface HeadCell<T> {
-  disablePadding?: boolean
-  name: keyof T
-  label: string
-  numeric?: boolean
+  disablePadding?: boolean;
+  name: keyof T;
+  label: string;
+  numeric?: boolean;
+  formatter?: "currency" | "function";
+  formatterFunction?: (e: T) => string;
 }
 
 interface EnhancedTableProps<T> {
-  numSelected: number
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void
-  order: Order
-  orderBy: string
-  rowCount: number
-  headcells: HeadCell<T>[]
-  name: string
-  action?: Action[]
+  numSelected: number;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
+  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  order: Order;
+  orderBy: string;
+  rowCount: number;
+  headcells: HeadCell<T>[];
+  name: string;
+  action?: Action[];
+  disableSelection?: boolean;
 }
 
 function EnhancedTableHead<T extends BaseModel>(props: EnhancedTableProps<T>) {
@@ -324,31 +354,33 @@ function EnhancedTableHead<T extends BaseModel>(props: EnhancedTableProps<T>) {
     headcells,
     name,
     action,
-  } = props
-  const createSortHandler = (property: keyof T) => (
-    event: React.MouseEvent<unknown>,
-  ) => {
-    onRequestSort(event, property)
-  }
+    disableSelection,
+  } = props;
+  const createSortHandler =
+    (property: keyof T) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
 
   return (
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': `select all ${name.toLocaleLowerCase()}s`,
-            }}
-          />
+          {!disableSelection && (
+            <Checkbox
+              color="primary"
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{
+                "aria-label": `select all ${name.toLocaleLowerCase()}s`,
+              }}
+            />
+          )}
         </TableCell>
         {[
           {
-            name: 'id' as keyof T,
-            label: 'ID',
+            name: "id" as keyof T,
+            label: "ID",
             numeric: true,
             disablePadding: true,
           },
@@ -360,13 +392,13 @@ function EnhancedTableHead<T extends BaseModel>(props: EnhancedTableProps<T>) {
           >
             <TableSortLabel
               active={orderBy === headCell.name}
-              direction={orderBy === headCell.name ? order : 'asc'}
+              direction={orderBy === headCell.name ? order : "asc"}
               onClick={createSortHandler(headCell.name)}
             >
               {headCell.label}
               {orderBy === headCell.name ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -375,18 +407,18 @@ function EnhancedTableHead<T extends BaseModel>(props: EnhancedTableProps<T>) {
         {action && <TableCell>Aksi</TableCell>}
       </TableRow>
     </TableHead>
-  )
+  );
 }
 
 interface EnhancedTableToolbarProps {
-  numSelected: number
-  handleSelectedDelete: () => void
-  handleSearch: (e: string) => void
-  name: string
+  numSelected: number;
+  handleSelectedDelete: () => void;
+  handleSearch: (e: string) => void;
+  name: string;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected, name, handleSearch } = props
+  const { numSelected, name, handleSearch } = props;
 
   return (
     <Toolbar
@@ -397,14 +429,14 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
           bgcolor: (theme) =>
             alpha(
               theme.palette.primary.main,
-              theme.palette.action.activatedOpacity,
+              theme.palette.action.activatedOpacity
             ),
         }),
       }}
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -413,7 +445,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
@@ -435,5 +467,5 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         />
       )}
     </Toolbar>
-  )
-}
+  );
+};

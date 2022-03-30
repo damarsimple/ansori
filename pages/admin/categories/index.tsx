@@ -1,47 +1,44 @@
-import { gql } from '@apollo/client'
-import { Box, Button } from '@mui/material'
-import AdminWrapper from '../../../components/AdminWrapper'
-import MUITable from '../../../components/MUITable'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { gql } from "@apollo/client";
+import { Box, Button } from "@mui/material";
+import AdminWrapper from "../../../components/AdminWrapper";
+import MUITable from "../../../components/MUITable";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-export default function News() {
-  const { push } = useRouter()
+export default function Category() {
   return (
     <AdminWrapper>
-      <Link href="/admin/news/create">
+      <Link href="/admin/categories/create">
         <a>
           <Button fullWidth variant="contained">
-            Buat Berita
+            Buat Kategori
           </Button>
         </a>
       </Link>
       <MUITable<{ id: number; name: string }>
         headcells={[
           {
-            name: 'name',
-            label: 'Name',
+            name: "name",
+            label: "Name",
           },
         ]}
-        name={'News'}
-        keys={'findManyComic'}
-        countKeys={'findManyComicCount'}
+        name={"News"}
+        keys={"findManyCategory"}
+        countKeys={"findManyCategoryCount"}
         countQuery={gql`
-          query FindManyComicCount {
-            findManyComicCount
+          query FindManyCategoryCount {
+            findManyCategoryCount
           }
         `}
-        action={['edit', 'delete']}
-        onEdit={(row) => push(`/admin/news/` + row.id)}
-        // deleteQuery={gql``}
+        action={["edit", "delete"]}
         query={gql`
-          query(
+          query (
             $take: Int
             $skip: Int
-            $orderBy: [ComicOrderByWithRelationInput]
-            $where: ComicWhereInput
+            $orderBy: [CategoryOrderByWithRelationInput]
+            $where: CategoryWhereInput
           ) {
-            findManyComic(
+            findManyCategory(
               take: $take
               skip: $skip
               orderBy: $orderBy
@@ -49,29 +46,10 @@ export default function News() {
             ) {
               id
               name
-              slug
-              thumb
-              type
-              thumbWide
-              altName
-              released
-              isHentai
-              rating
-              views
-              viewsHourly
-              viewsDaily
-              viewsWeek
-              description
-              status
-              age
-              concept
-              lastChapterUpdateAt
-              createdAt
-              updatedAt
             }
           }
         `}
       />
     </AdminWrapper>
-  )
+  );
 }

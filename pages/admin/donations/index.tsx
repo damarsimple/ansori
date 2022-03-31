@@ -3,25 +3,45 @@ import { Button } from "@mui/material";
 import AdminWrapper from "../../../components/AdminWrapper";
 import MUITable from "../../../components/MUITable";
 import Link from "next/link";
+import { Donation as DonationType } from "../../../types";
 
 export default function Donation() {
   return (
     <AdminWrapper>
-      <Link href="/admin/donations/create">
-        <a>
-          <Button fullWidth variant="contained">
-            Buat Donasi
-          </Button>
-        </a>
-      </Link>
-      <MUITable<{ id: number; name: string }>
-        headcells={[
+      <MUITable<DonationType>
+        fields={[
           {
             name: "name",
             label: "Name",
           },
+          {
+            name: "cityName",
+            label: "Nama Kota",
+          },
+          {
+            name: "type",
+            label: "Tipe Donasi",
+          },
+
+          {
+            name: "amount",
+            label: "Jumlah Donasi",
+          },
+
+          {
+            name: "account.name",
+            label: "Nama Akun",
+          },
+          {
+            name: "account.bankName",
+            label: "Nama Bank",
+          },
+          {
+            name: "message",
+            label: "Pesan",
+          },
         ]}
-        name={"News"}
+        name={"Donasi"}
         keys={"findManyDonation"}
         countKeys={"findManyDonationCount"}
         countQuery={gql`
@@ -29,7 +49,45 @@ export default function Donation() {
             findManyDonationCount
           }
         `}
-        action={["edit", "delete"]}
+        deleteQuery={gql`
+          mutation DeleteManyDonation($where: DonationWhereInput) {
+            deleteManyDonation(where: $where) {
+              count
+            }
+          }
+        `}
+        action={["create", "edit", "delete"]}
+        createFields={[
+          {
+            name: "name",
+            label: "Name",
+          },
+        ]}
+        editFields={[
+          {
+            name: "name",
+            label: "Name",
+          },
+        ]}
+        createQuery={gql`
+          mutation CreateOneDonation($data: DonationCreateInput!) {
+            createOneDonation(data: $data) {
+              id
+              name
+            }
+          }
+        `}
+        editQuery={gql`
+          mutation UpdateOneDonation(
+            $data: DonationUpdateInput!
+            $where: DonationWhereUniqueInput!
+          ) {
+            updateOneDonation(data: $data, where: $where) {
+              id
+              name
+            }
+          }
+        `}
         query={gql`
           query (
             $take: Int
@@ -45,6 +103,16 @@ export default function Donation() {
             ) {
               id
               name
+              hideName
+              amount
+              message
+              cityName
+              type
+              account {
+                id
+                name
+                bankName
+              }
             }
           }
         `}

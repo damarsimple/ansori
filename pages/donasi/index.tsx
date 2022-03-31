@@ -33,7 +33,6 @@ import { money } from "../../utils";
 const genericName = ["Hamba Allah", "Anak Saleh", "Donatur Bersedekah"];
 
 export default function Slug() {
-  const [showCalculator, setShowCalculator] = useState(false);
   const [tabs, setTabs] = useState(0);
 
   const {
@@ -75,8 +74,6 @@ export default function Slug() {
       }
     }
   `);
-
-  console.log(errors);
 
   return (
     <Container>
@@ -242,7 +239,7 @@ export default function Slug() {
         {tabs == 1 && (
           <MUITable<Donation>
             disableSelection
-            headcells={[
+            fields={[
               {
                 name: "name",
                 label: "Nama Donatur",

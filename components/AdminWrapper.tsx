@@ -17,6 +17,21 @@ import Icon from "@mui/material/Icon";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Link from "next/link";
+import { useUserStore } from "../stores/useUserStore";
+import {
+  Grid,
+  Paper,
+  Avatar,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Button,
+} from "@mui/material";
+import { useForm } from "react-hook-form";
+import Copyright from "./Copyright";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { useMutation, gql } from "@apollo/client";
+import { AuthResponse } from "../types";
 
 const drawerWidth = 240;
 
@@ -83,6 +98,143 @@ export default function PersistentDrawerLeft({
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const { setToken, user, setUser, token } = useUserStore();
+  const [handle] = useMutation<{ login: AuthResponse }>(gql`
+    mutation Login($email: String!, $password: String!) {
+      login(email: $email, password: $password) {
+        status
+        token
+        user {
+          id
+          name
+          email
+        }
+        message
+      }
+    }
+  `);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+    getValues,
+  } = useForm<{
+    password: string;
+    email: string;
+  }>({
+    defaultValues: { email: "", password: "" },
+  });
+
+  const [error, setError] = useState("");
+
+  const onSubmit = handleSubmit((data) => {
+    handle({
+      variables: {
+        email: data.email,
+        password: data.password,
+      },
+    }).then((res) => {
+      if (!res.data || !res.data.login.status) {
+        alert(res.data?.login.message);
+        setError(res.data?.login.message ?? "");
+
+        return;
+      }
+
+      const { token, user } = res.data.login;
+      setToken(token);
+      user && setUser(user);
+    });
+  });
+
+  if (!token) {
+    return (
+      <Grid container component="main" sx={{ height: "100vh" }}>
+        <CssBaseline />
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: "url(https://source.unsplash.com/random)",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: (t) =>
+              t.palette.mode === "light"
+                ? t.palette.grey[50]
+                : t.palette.grey[900],
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            <Typography color={"error"} component="p" variant="body2">
+              {error}
+            </Typography>
+            <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                autoFocus
+                helperText={errors.email?.message}
+                {...register("email", { required: true })}
+                autoComplete="email"
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                type="password"
+                autoComplete="current-password"
+                helperText={errors.email?.message}
+                {...register("password", { required: true })}
+              />
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="#">Forgot password?</Link>
+                </Grid>
+                <Grid item>
+                  <Link href="#">{"Don't have an account? Sign Up"}</Link>
+                </Grid>
+              </Grid>
+              <Copyright sx={{ mt: 5 }} />
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    );
+  }
 
   return (
     <Box sx={{ display: "flex" }}>

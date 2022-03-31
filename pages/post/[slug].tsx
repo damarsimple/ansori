@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import Image from "next/image";
 import { grey } from "@mui/material/colors";
@@ -14,8 +14,41 @@ import { Email, Facebook, Twitter, WhatsApp } from "@mui/icons-material";
 export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
   const { href } = process.browser && window ? window.location : { href: "" };
 
-  const { title, author, description, wide, potrait, content, createdAt } =
-    findUniqueNews || {};
+  const {
+    title,
+    author,
+    description,
+    wide,
+    potrait,
+    content,
+    createdAt,
+    views,
+    shareCountMap,
+    id,
+  } = findUniqueNews || {};
+
+  useEffect(() => {
+    if (!id) return;
+    client.mutate({
+      mutation: gql`
+        mutation ReportView($id: Int!) {
+          reportView(id: $id)
+        }
+      `,
+      variables: { id },
+    });
+  }, [id]);
+
+  const handleShareReport = (key: string) => {
+    client.mutate({
+      mutation: gql`
+        mutation ReportShare($id: Int!, $key: String!) {
+          reportShare(id: $id, key: $key)
+        }
+      `,
+      variables: { id, key },
+    });
+  };
 
   return (
     <Container>
@@ -34,7 +67,7 @@ export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
           {moment(createdAt).format("dddd, Do MMMM YYYY | hh:mm")}
         </Typography>
         <Typography variant="body1">
-          Oleh: <strong>{author?.name}</strong>
+          Oleh: <strong>{author?.name}</strong> | Dilihat: {views}x kali
         </Typography>
         <Box
           sx={{
@@ -60,8 +93,8 @@ export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
           </Typography>
         ))} */}
         <Typography paragraph>
-           {content && <div dangerouslySetInnerHTML={{ __html: content }}></div>}
-       </Typography>
+          {content && <div dangerouslySetInnerHTML={{ __html: content }}></div>}
+        </Typography>
         <Box
           sx={{
             overflowX: "auto",
@@ -71,10 +104,6 @@ export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
             gap: 1,
           }}
         >
-          {[...Array(10)].map((e, i) => (
-            <Chip key={i} label="ZAKAT" />
-          ))}
-
           <Divider />
         </Box>
         <Typography component="h6" variant="h6" textAlign={"center"}>
@@ -89,25 +118,29 @@ export default function Slug({ findUniqueNews }: { findUniqueNews: News }) {
         >
           {[
             {
-              image: <Facebook color="primary"/>,
+              image: <Facebook color="primary" />,
               url: "https://www.facebook.com/sharer/sharer.php?u=" + href,
+              key: "facebook",
             },
             {
-              image: <Twitter color="primary"/>,
+              image: <Twitter color="primary" />,
               url: "https://twitter.com/intent/tweet?url=" + href,
+              key: "twitter",
             },
             {
-              image: <WhatsApp color="primary"/>,
+              image: <WhatsApp color="primary" />,
               url: "https://wa.me/?text=" + href,
+              key: "whatsapp",
             },
             {
-              image: <Email color="primary"/>,
+              image: <Email color="primary" />,
               url: `mailto:?subject={"TITLE"}&body=Check berita ini ${href}`,
+              key: "email",
             },
           ].map((e) => (
             <Link href={e.url} key={e.url}>
-              <a>
-                {e.image}
+              <a onClick={() => handleShareReport(e.key)} target="_blank">
+                {e.image} {shareCountMap[e.key as any] ?? 0}
               </a>
             </Link>
           ))}
@@ -166,6 +199,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
           potrait
           wide
           content
+          shareCountMap
           description
         }
       }

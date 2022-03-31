@@ -12,6 +12,12 @@ import {
   TablePagination,
   Typography,
   TextField,
+  Button,
+  Modal,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import React, { useState } from "react";
 import get from "lodash/get";
@@ -24,10 +30,12 @@ import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { visuallyHidden } from "@mui/utils";
 import { toast } from "react-toastify";
-import { DocumentNode, useQuery } from "@apollo/client";
+import { DocumentNode, gql, useMutation, useQuery } from "@apollo/client";
 import { client } from "../modules/client";
 import { useRouter } from "next/router";
 import { money } from "../utils";
+import { useForm } from "react-hook-form";
+import { DropZone } from "./Dropzone";
 
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -44,13 +52,43 @@ interface BaseModel {
   id: number;
 }
 
-type Action = "edit" | "delete";
+type Action = "edit" | "delete" | "create";
 
+interface HeadCell<T> {
+  disablePadding?: boolean;
+  name: keyof T | Leaves<T, 3>;
+  label: string;
+  numeric?: boolean;
+  formatter?: "currency" | "function";
+  formatterFunction?: (e: T) => string;
+}
+
+type EditCellRender = "edit" | "create";
+interface EditCell<T> {
+  name: keyof T;
+  label: string;
+  formatterFunction?: (e: T) => string;
+  type?: "text" | "number" | "date" | "select" | "file";
+  selects?: string[];
+  renderOn?: EditCellRender[];
+  required?: boolean;
+  formatter?: (e: string | number) => string | number;
+}
+
+interface MutationModifier<T> {
+  create?: (e: T) => T;
+  edit?: (e: T) => T;
+}
 interface TableProp<T> {
-  headcells: HeadCell<T>[];
+  fields: HeadCell<T>[];
+  editFields?: EditCell<T>[];
+  createFields?: EditCell<T>[];
+  mutationModifier?: MutationModifier<T>;
   action?: Action[];
   name: string;
   deleteQuery?: DocumentNode;
+  createQuery?: DocumentNode;
+  editQuery?: DocumentNode;
   query: DocumentNode;
   countQuery: DocumentNode;
   keys: string;
@@ -61,8 +99,10 @@ interface TableProp<T> {
 }
 
 export default function MUITable<T extends BaseModel>({
-  headcells,
+  fields,
   name,
+  createQuery,
+  editQuery,
   deleteQuery,
   action,
   query,
@@ -72,14 +112,17 @@ export default function MUITable<T extends BaseModel>({
   countKeys,
   onEdit,
   disableSelection,
+  editFields,
+  createFields,
+  mutationModifier,
 }: TableProp<T>) {
   const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof T>("id");
+  const [orderBy, setOrderBy] = useState<string>("id");
   const [selected, setSelected] = useState<readonly number[]>([]);
 
   const handleRequestSort = (
     _: React.MouseEvent<unknown>,
-    property: keyof T
+    property: string
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -134,24 +177,27 @@ export default function MUITable<T extends BaseModel>({
     toast.info(`${selected.length} ${name.toLowerCase()}s will be deleted`);
 
     deleteQuery &&
-      client.query({
-        query: deleteQuery,
-        variables: {
-          where: {
-            id: {
-              in: selected,
+      client
+        .mutate({
+          mutation: deleteQuery,
+          variables: {
+            where: {
+              id: {
+                in: selected,
+              },
             },
           },
-        },
-      });
-
-    setSelected([]);
+        })
+        .then((e) => {
+          setSelected([]);
+          refetch();
+        });
   };
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [search, setSearch] = useState("");
-  const { data, loading, error } = useQuery(query, {
+  const { data, loading, error, refetch } = useQuery(query, {
     variables: {
       where: {
         ...(search.length !== 0 && {
@@ -185,7 +231,7 @@ export default function MUITable<T extends BaseModel>({
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const formatter = (e: HeadCell<T>, row: T) => {
-    const val = row[e.name];
+    const val = get(row, e.name);
 
     if (e.formatter == "function" && e.formatterFunction) {
       return e.formatterFunction(row);
@@ -204,8 +250,112 @@ export default function MUITable<T extends BaseModel>({
     return val;
   };
 
+  const [editTarget, setEditTarget] = useState<null | T>(null);
+  const [mutateModal, setMutateModal] = useState<"edit" | "create" | "">("");
+
+  const hideModal = () => setMutateModal("");
+
+  const handleCreate = (createTarget: T) => {
+    createQuery &&
+      client
+        .mutate({
+          mutation: createQuery,
+          variables: {
+            data: mutationModifier?.create
+              ? mutationModifier.create(createTarget)
+              : createTarget,
+          },
+        })
+        .then((e) => {
+          refetch();
+          toast.success("Berhasil membuat data");
+          hideModal();
+        })
+        .catch((e) => toast.error("Gagal membuat data"));
+  };
+
+  const handleEdit = (e: T) => {
+    const data = mutationModifier?.edit ? mutationModifier.edit(e) : e;
+
+    const remap = {};
+
+    const ignores = ["__typename", "id"];
+
+    if (!editTarget) return;
+
+    for (const key in data) {
+      if (ignores.includes(key)) continue;
+      //@ts-ignore
+      remap[key as string] = {
+        //@ts-ignore
+        set: data[key],
+      };
+    }
+
+    editQuery &&
+      client
+        .mutate({
+          mutation: editQuery,
+          variables: {
+            where: {
+              id: editTarget.id,
+            },
+            data: remap,
+          },
+        })
+        .then((e) => {
+          refetch();
+          toast.success("Berhasil membuat data");
+          hideModal();
+        })
+        .catch((e) => toast.error("Gagal membuat data"));
+  };
+
+  const currentFields = mutateModal == "edit" ? editFields : createFields;
+
   return (
     <Paper sx={{ p: 1 }}>
+      <Modal open={mutateModal !== ""} onClose={hideModal}>
+        <Box
+          sx={{
+            position: "absolute" as "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Box display="flex" justifyContent={"flex-end"}>
+            <Button onClick={hideModal}>x</Button>
+          </Box>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            {mutateModal === "edit" ? "Edit" : "Create"} {name}
+          </Typography>
+
+          {currentFields && (
+            <MutationForm
+              //@ts-ignore
+              fields={currentFields}
+              defaultValues={mutateModal == "edit" ? editTarget : {}}
+              onSubmit={mutateModal === "edit" ? handleEdit : handleCreate}
+            />
+          )}
+        </Box>
+      </Modal>
+
+      {action?.includes("create") && (
+        <Button
+          fullWidth
+          variant="contained"
+          onClick={() => setMutateModal("create")}
+        >
+          Buat {name}
+        </Button>
+      )}
       <Box sx={{ width: "100%" }}>
         <EnhancedTableToolbar
           numSelected={selected.length}
@@ -220,7 +370,7 @@ export default function MUITable<T extends BaseModel>({
             size={"small"}
           >
             <EnhancedTableHead<T>
-              headcells={headcells}
+              fields={fields}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy as string}
@@ -269,7 +419,7 @@ export default function MUITable<T extends BaseModel>({
                       >
                         {row.id}
                       </TableCell>
-                      {headcells.map((headcell) => (
+                      {fields.map((headcell) => (
                         <TableCell
                           onClick={(event) => handleClick(event, row.id)}
                           component="th"
@@ -283,7 +433,16 @@ export default function MUITable<T extends BaseModel>({
                       {action && (
                         <TableCell component="th" id={labelId} scope="row">
                           {action.includes("edit") && (
-                            <IconButton onClick={() => onEdit && onEdit(row)}>
+                            <IconButton
+                              onClick={() => {
+                                if (onEdit) {
+                                  onEdit(row);
+                                } else {
+                                  setMutateModal("edit");
+                                  setEditTarget(row);
+                                }
+                              }}
+                            >
                               <Edit />
                             </IconButton>
                           )}
@@ -321,23 +480,14 @@ export default function MUITable<T extends BaseModel>({
 
 type Order = "asc" | "desc";
 
-interface HeadCell<T> {
-  disablePadding?: boolean;
-  name: keyof T;
-  label: string;
-  numeric?: boolean;
-  formatter?: "currency" | "function";
-  formatterFunction?: (e: T) => string;
-}
-
 interface EnhancedTableProps<T> {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
-  headcells: HeadCell<T>[];
+  fields: HeadCell<T>[];
   name: string;
   action?: Action[];
   disableSelection?: boolean;
@@ -351,13 +501,13 @@ function EnhancedTableHead<T extends BaseModel>(props: EnhancedTableProps<T>) {
     numSelected,
     rowCount,
     onRequestSort,
-    headcells,
+    fields,
     name,
     action,
     disableSelection,
   } = props;
   const createSortHandler =
-    (property: keyof T) => (event: React.MouseEvent<unknown>) => {
+    (property: string) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -379,12 +529,12 @@ function EnhancedTableHead<T extends BaseModel>(props: EnhancedTableProps<T>) {
         </TableCell>
         {[
           {
-            name: "id" as keyof T,
+            name: "id",
             label: "ID",
             numeric: true,
             disablePadding: true,
           },
-          ...headcells,
+          ...fields,
         ].map((headCell, index) => (
           <TableCell
             key={`headcell-${index}`}
@@ -393,7 +543,7 @@ function EnhancedTableHead<T extends BaseModel>(props: EnhancedTableProps<T>) {
             <TableSortLabel
               active={orderBy === headCell.name}
               direction={orderBy === headCell.name ? order : "asc"}
-              onClick={createSortHandler(headCell.name)}
+              onClick={createSortHandler(`${headCell.name}`)}
             >
               {headCell.label}
               {orderBy === headCell.name ? (
@@ -417,9 +567,12 @@ interface EnhancedTableToolbarProps {
   name: string;
 }
 
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected, name, handleSearch } = props;
-
+const EnhancedTableToolbar = ({
+  numSelected,
+  name,
+  handleSearch,
+  handleSelectedDelete,
+}: EnhancedTableToolbarProps) => {
   return (
     <Toolbar
       sx={{
@@ -455,7 +608,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
       )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={handleSelectedDelete}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -469,3 +622,164 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     </Toolbar>
   );
 };
+
+interface MutationFormProp<T> {
+  fields: EditCell<T>[];
+  defaultValues: any;
+  onSubmit: (values: T) => void;
+}
+
+function MutationForm<T>({
+  defaultValues,
+  onSubmit,
+  fields,
+}: MutationFormProp<T>) {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+    getValues,
+  } = useForm<T>({
+    defaultValues,
+  });
+
+  const [fileMap, setfileMap] = useState<Record<string, string>>({});
+
+  //@ts-ignore
+  const formSubmit = handleSubmit((e) => onSubmit({ ...e, ...fileMap }));
+
+  const [uploadFile] = useMutation<{ uploadFile: String }>(gql`
+    mutation UploadFile($file: Upload) {
+      uploadFile(file: $file)
+    }
+  `);
+
+  const uploadHandler = async (key: string, file: File) => {
+    try {
+      const { data: ulData } = await uploadFile({
+        variables: { file },
+      });
+      //@ts-ignore
+      setfileMap({
+        ...fileMap,
+        [key]: `${process.env.NEXT_PUBLIC_ASSET_ENDPOINT}${ulData?.uploadFile}`,
+      });
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  return (
+    <Box
+      sx={{ display: "flex", gap: 3, flexDirection: "column" }}
+      component="form"
+      onSubmit={formSubmit}
+      autoComplete="off"
+    >
+      {fields.map((e) => {
+        switch (e.type) {
+          case "select":
+            return (
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">{e.label}</InputLabel>
+                <Select
+                  label={e.label}
+                  variant="standard"
+                  //@ts-ignore
+                  {...register(e.name)}
+                >
+                  {e.selects?.map((e) => (
+                    <MenuItem key={e} value={e}>
+                      {e}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+
+          case "file":
+            return (
+              <DropZone
+                title={e.label}
+                onFile={(file) => {
+                  uploadHandler(`${e.name}`, file);
+                }}
+                height={150}
+              />
+            );
+            break;
+        }
+
+        return (
+          <TextField
+            fullWidth
+            key={e.label}
+            type={e.type}
+            label={e.label}
+            //@ts-ignore
+            error={errors[`${e.name}`] !== undefined}
+            //@ts-ignore
+            helperText={errors[`${e.name}`]?.message}
+            //@ts-ignore
+            {...register(`${e.name}`, { ...e })}
+          />
+        );
+      })}
+      <Button type="submit" fullWidth>
+        Masukkan
+      </Button>
+    </Box>
+  );
+}
+
+// https://stackoverflow.com/questions/58434389/typescript-deep-keyof-of-a-nested-object
+
+type Prev = [
+  never,
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  ...0[]
+];
+
+type Paths<T, D extends number = 10> = [D] extends [never]
+  ? never
+  : T extends object
+  ? {
+      [K in keyof T]-?: K extends string | number
+        ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
+        : never;
+    }[keyof T]
+  : "";
+
+type Leaves<T, D extends number = 10> = [D] extends [never]
+  ? never
+  : T extends object
+  ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
+  : "";
+
+type Join<K, P> = K extends string | number
+  ? P extends string | number
+    ? `${K}${"" extends P ? "" : "."}${P}`
+    : never
+  : never;

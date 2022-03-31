@@ -3,25 +3,31 @@ import { Button } from "@mui/material";
 import AdminWrapper from "../../../components/AdminWrapper";
 import MUITable from "../../../components/MUITable";
 import Link from "next/link";
+import { DonationAccount as DonationAccountType } from "../../../types";
 
 export default function DonationAccount() {
   return (
     <AdminWrapper>
-      <Link href="/admin/accountdonations/create">
-        <a>
-          <Button fullWidth variant="contained">
-            Buat Akun Donasi
-          </Button>
-        </a>
-      </Link>
-      <MUITable<{ id: number; name: string }>
-        headcells={[
+      <MUITable<DonationAccountType>
+        fields={[
           {
             name: "name",
             label: "Name",
           },
+          {
+            name: "accountName",
+            label: "Nama Akun",
+          },
+          {
+            name: "accountNumber",
+            label: "Nomor Akun",
+          },
+          {
+            name: "bankName",
+            label: "Nama Bank",
+          },
         ]}
-        name={"News"}
+        name={"Akun Donasi"}
         keys={"findManyDonationAccount"}
         countKeys={"findManyDonationAccountCount"}
         countQuery={gql`
@@ -29,7 +35,85 @@ export default function DonationAccount() {
             findManyDonationAccountCount
           }
         `}
-        action={["edit", "delete"]}
+        action={["create", "edit", "delete"]}
+        createFields={[
+          {
+            name: "name",
+            label: "Name",
+          },
+          {
+            name: "accountName",
+            label: "Nama Akun",
+          },
+          {
+            name: "accountNumber",
+            label: "Nomor Akun",
+            type: "number",
+          },
+          {
+            name: "bankName",
+            label: "Nama Bank",
+          },
+          {
+            name: "logoUrl",
+            label: "Logo Bank",
+            type: "file",
+          },
+        ]}
+        editFields={[
+          {
+            name: "name",
+            label: "Name",
+          },
+          {
+            name: "accountName",
+            label: "Nama Akun",
+          },
+          {
+            name: "accountNumber",
+            label: "Nomor Akun",
+            type: "number",
+          },
+          {
+            name: "bankName",
+            label: "Nama Bank",
+          },
+          {
+            name: "logoUrl",
+            label: "Logo Bank",
+            type: "file",
+          },
+        ]}
+        createQuery={gql`
+          mutation CreateOneDonationAccount(
+            $data: DonationAccountCreateInput!
+          ) {
+            createOneDonationAccount(data: $data) {
+              id
+              name
+            }
+          }
+        `}
+        editQuery={gql`
+          mutation UpdateOneDonationAccount(
+            $data: DonationAccountUpdateInput!
+            $where: DonationAccountWhereUniqueInput!
+          ) {
+            updateOneDonationAccount(data: $data, where: $where) {
+              id
+              name
+            }
+          }
+        `}
+        deleteQuery={gql`
+          mutation DeleteManyDonationAccount(
+            $where: DonationAccountWhereInput
+          ) {
+            deleteManyDonationAccount(where: $where) {
+              count
+            }
+          }
+        `}
         query={gql`
           query (
             $take: Int
@@ -45,6 +129,10 @@ export default function DonationAccount() {
             ) {
               id
               name
+              accountName
+              accountNumber
+              bankName
+              logoUrl
             }
           }
         `}

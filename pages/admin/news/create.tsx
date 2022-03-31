@@ -18,8 +18,14 @@ import { useDropzone } from "react-dropzone";
 import AdminWrapper from "../../../components/AdminWrapper";
 import useConfirmModal from "../../../hooks/useConfirmModal";
 import Editor from "../../../components/Editor";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { Category, News, NewsCreateInput } from "../../../types";
+import { useRouter } from "next/router";
+import slugify from "slugify";
+import { DropZone } from "../../../components/Dropzone";
 
 export default function Id() {
+  const { push } = useRouter();
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -30,7 +36,7 @@ export default function Id() {
       id: number;
       name: string;
     }[]
-  >([{ id: 0, name: "test" }]);
+  >([]);
 
   const { call } = useConfirmModal();
 
@@ -45,7 +51,31 @@ export default function Id() {
     });
   };
 
-  const handleSubmit = () => {
+  const [createNews] = useMutation<{ createOneNews: News }>(gql`
+    mutation CreateOneNews($data: NewsCreateInput!) {
+      createOneNews(data: $data) {
+        id
+      }
+    }
+  `);
+
+  const [uploadFile] = useMutation<{ uploadFile: String }>(gql`
+    mutation UploadFile($file: Upload) {
+      uploadFile(file: $file)
+    }
+  `);
+
+  const { data: { findManyCategory } = {} } = useQuery<{
+    findManyCategory: Category[];
+  }>(gql`
+    query GetCategory {
+      findManyCategory {
+        id
+        name
+      }
+    }
+  `);
+  const handleSubmit = async () => {
     const err: Record<string, string> = {};
 
     if (!title) {
@@ -76,9 +106,52 @@ export default function Id() {
     for (const key in err) {
       if (err[key]) {
         setValidationError(err);
+        console.log(err);
         return;
       }
     }
+
+    const { data: potraitData } = await uploadFile({
+      variables: { file: potrait },
+    });
+    const { data: wideData } = await uploadFile({
+      variables: { file: wide },
+    });
+
+    if (!potraitData || !wideData) {
+      alert("Gagal mengupload gambar !");
+      return;
+    }
+
+    const data: NewsCreateInput = {
+      title,
+      content,
+      description,
+      potrait: `${process.env.NEXT_PUBLIC_ASSET_ENDPOINT}${potraitData.uploadFile}`,
+      wide: `${process.env.NEXT_PUBLIC_ASSET_ENDPOINT}${wideData.uploadFile}`,
+      categories: {
+        connect: categories.map((category) => ({ id: category.id })),
+      },
+      slug: slugify(title),
+      shareCountMap: JSON.stringify({
+        facebook: 0,
+        twitter: 0,
+        whatsapp: 0,
+        email: 0,
+      }),
+    };
+
+    createNews({
+      variables: { data },
+    })
+      .then((e) => {
+        alert("Berita berhasil dibuat");
+        push("/admin/news");
+      })
+      .catch((e) => {
+        alert("Berita gagal dibuat");
+        //  push("/admin/news");
+      });
   };
 
   return (
@@ -121,7 +194,7 @@ export default function Id() {
               height={350}
               errorMessage={validationError.wide}
             />
-            <Editor handleChange={console.log} />
+            <Editor handleChange={setContent} />
           </Box>
         </Grid>
         <Grid item xs={2}>
@@ -141,14 +214,18 @@ export default function Id() {
             </Typography>
             <Divider />
             <Box sx={{ p: 2 }}>
-              <Chip
-                label="Test"
-                onDelete={() => {
-                  resetValidationError("categories");
-                }}
-                sx={{ m: 0.5 }}
-                deleteIcon={<Add />}
-              />
+              {findManyCategory?.map((e) => (
+                <Chip
+                  key={e.id}
+                  label={e.name}
+                  onDelete={() => {
+                    resetValidationError("categories");
+                    setCategories([...categories, { name: e.name, id: e.id }]);
+                  }}
+                  sx={{ m: 0.5 }}
+                  deleteIcon={<Add />}
+                />
+              ))}
             </Box>
           </Paper>
           <Paper>
@@ -196,74 +273,3 @@ export default function Id() {
     </AdminWrapper>
   );
 }
-
-const DropZone = ({
-  title,
-  onFile,
-  height,
-  errorMessage,
-}: {
-  title: string;
-  height: number;
-  errorMessage?: string;
-  onFile: (file: File) => void;
-}) => {
-  const [currentFile, setCurrentFile] = useState<File | null>(null);
-
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      onFile(acceptedFiles[0]);
-      setCurrentFile(acceptedFiles[0]);
-    },
-    [onFile]
-  );
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
-    onDrop,
-  });
-
-  return (
-    <Paper>
-      <Typography variant="h6" component={"h1"} sx={{ m: 2 }}>
-        {title}
-      </Typography>
-      <Divider />
-      {errorMessage && (
-        <Typography color="error" variant="body1" component="p">
-          {errorMessage}
-        </Typography>
-      )}
-      {currentFile ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-          }}
-        >
-          <img
-            alt={title}
-            src={URL.createObjectURL(currentFile)}
-            height={height}
-            width={"100%"}
-          />
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={() => setCurrentFile(null)}
-          >
-            Ubah
-          </Button>
-        </Box>
-      ) : (
-        <Box sx={{ p: 2 }} {...getRootProps()}>
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <p>Jatuhkan file kesini ...</p>
-          ) : (
-            <p>Jatuhkan atau klik untuk mengupload gambar</p>
-          )}
-        </Box>
-      )}
-    </Paper>
-  );
-};

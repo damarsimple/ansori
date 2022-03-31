@@ -1,12 +1,13 @@
-import { gql } from '@apollo/client'
-import { Box, Button } from '@mui/material'
-import AdminWrapper from '../../../components/AdminWrapper'
-import MUITable from '../../../components/MUITable'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { gql } from "@apollo/client";
+import { Box, Button } from "@mui/material";
+import AdminWrapper from "../../../components/AdminWrapper";
+import MUITable from "../../../components/MUITable";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { News as NewsType } from "../../../types";
 
 export default function News() {
-  const { push } = useRouter()
+  const { push } = useRouter();
   return (
     <AdminWrapper>
       <Link href="/admin/news/create">
@@ -16,56 +17,40 @@ export default function News() {
           </Button>
         </a>
       </Link>
-      <MUITable<{ id: number; name: string }>
-        headcells={[
+      <MUITable<NewsType>
+        fields={[
           {
-            name: 'name',
-            label: 'Name',
+            name: "title",
+            label: "Name",
           },
         ]}
-        name={'News'}
-        keys={'findManyComic'}
-        countKeys={'findManyComicCount'}
+        name={"News"}
+        keys={"findManyNews"}
+        countKeys={"findManyNewsCount"}
         countQuery={gql`
-          query FindManyComicCount {
-            findManyComicCount
+          query FindManyNewsCount {
+            findManyNewsCount
           }
         `}
-        action={['edit', 'delete']}
+        action={["edit", "delete"]}
         onEdit={(row) => push(`/admin/news/` + row.id)}
         // deleteQuery={gql``}
         query={gql`
-          query(
+          query (
             $take: Int
             $skip: Int
-            $orderBy: [ComicOrderByWithRelationInput]
-            $where: ComicWhereInput
+            $orderBy: [NewsOrderByWithRelationInput]
+            $where: NewsWhereInput
           ) {
-            findManyComic(
+            findManyNews(
               take: $take
               skip: $skip
               orderBy: $orderBy
               where: $where
             ) {
               id
-              name
+              title
               slug
-              thumb
-              type
-              thumbWide
-              altName
-              released
-              isHentai
-              rating
-              views
-              viewsHourly
-              viewsDaily
-              viewsWeek
-              description
-              status
-              age
-              concept
-              lastChapterUpdateAt
               createdAt
               updatedAt
             }
@@ -73,5 +58,5 @@ export default function News() {
         `}
       />
     </AdminWrapper>
-  )
+  );
 }

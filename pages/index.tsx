@@ -24,7 +24,7 @@ import PostCard from "../components/PostCard";
 import Link from "next/link";
 import { useQuery, gql } from "@apollo/client";
 import { Category, Donation, ImageGallery, Member, News } from "../types";
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from "@mui/material/styles";
 
 const formatter = (x: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(
@@ -62,6 +62,11 @@ const Home: NextPage = () => {
       variables: {
         take: 10,
         categoriesTake2: 1,
+        orderBy: [
+          {
+            createdAt: "desc",
+          },
+        ],
       },
     }
   );
@@ -272,12 +277,14 @@ const Home: NextPage = () => {
 
   const theme = useTheme();
 
+  const firstNews = findManyNews?.length ? findManyNews[0] : null;
+
   return (
     <>
       <Box
         sx={{
           backgroundColor: "white",
-          color: theme.palette.primary.main
+          color: theme.palette.primary.main,
         }}
       >
         <Marquee gradient={false} pauseOnHover>
@@ -331,35 +338,34 @@ const Home: NextPage = () => {
               onSlideChange={() => console.log("slide change")}
             >
               <SwiperSlide>
-                <Box
-                  sx={{
-                    height: {
-                      xs: 240,
-                      sx: 400,
-                    },
-                    width: "100%",
-                    position: "relative",
-                    background:
-                      "linear-gradient(to bottom,rgba(0,0,0,0),#575757), url('https://img.beritasatu.com/cache/beritasatu/910x580-2/1644679052.jpg') ",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: 0,
-                      m: 4,
-                      color: "white",
-                    }}
-                  >
-                    <Typography variant="h6" component={"h1"}>
-                      Sri Mulyani Berdonasi sebesar Rp 100.000.000
-                    </Typography>
-
-                    <Typography variant="body2" component={"p"}>
-                      Damar Albaribin - 2 jam yang lalu
-                    </Typography>
-                  </Box>
-                </Box>
+                <Link href={"/post/" + firstNews?.slug}>
+                  <a>
+                    <Box
+                      sx={{
+                        height: {
+                          xs: 240,
+                          sx: 400,
+                        },
+                        width: "100%",
+                        position: "relative",
+                        background: `linear-gradient(to bottom,rgba(0,0,0,0),#575757), url('${firstNews?.title}') `,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          bottom: 0,
+                          m: 4,
+                          color: "white",
+                        }}
+                      >
+                        <Typography variant="h6" component={"h1"}>
+                          {firstNews?.title}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </a>
+                </Link>
               </SwiperSlide>
             </Swiper>
 

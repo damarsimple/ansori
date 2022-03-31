@@ -1,4 +1,3 @@
-//@ts-nocheck
 /* eslint-disable */
 
 // *******************************************************
@@ -109,109 +108,116 @@ export interface MetalPrice {
   price: Maybe<number>;
 }
 
+export interface AuthResponse {
+  status: Maybe<boolean>;
+  token: Maybe<string>;
+  message: Maybe<string>;
+  user: Maybe<User>;
+}
+
 export interface BatchPayload {
   count: number;
 }
 
 export enum UserScalarFieldEnum {
-  Id = "id",
-  Email = "email",
-  Name = "name",
-  Profilepicture = "profilePicture",
-  Password = "password",
-  Showonhomepage = "showOnHomepage",
-  Roles = "roles",
-  Createdat = "createdAt",
-  Updatedat = "updatedAt",
+  Id = 'id',
+  Email = 'email',
+  Name = 'name',
+  Profilepicture = 'profilePicture',
+  Password = 'password',
+  Showonhomepage = 'showOnHomepage',
+  Roles = 'roles',
+  Createdat = 'createdAt',
+  Updatedat = 'updatedAt',
 }
 export enum MemberScalarFieldEnum {
-  Id = "id",
-  Name = "name",
-  Role = "role",
-  Description = "description",
-  Image = "image",
-  Createdat = "createdAt",
-  Updatedat = "updatedAt",
+  Id = 'id',
+  Name = 'name',
+  Role = 'role',
+  Description = 'description',
+  Image = 'image',
+  Createdat = 'createdAt',
+  Updatedat = 'updatedAt',
 }
 export enum ImageGalleryScalarFieldEnum {
-  Id = "id",
-  Name = "name",
-  Description = "description",
-  Image = "image",
-  Createdat = "createdAt",
-  Updatedat = "updatedAt",
+  Id = 'id',
+  Name = 'name',
+  Description = 'description',
+  Image = 'image',
+  Createdat = 'createdAt',
+  Updatedat = 'updatedAt',
 }
 export enum NewsScalarFieldEnum {
-  Id = "id",
-  Published = "published",
-  Title = "title",
-  Authorid = "authorId",
-  Slug = "slug",
-  Createdat = "createdAt",
-  Updatedat = "updatedAt",
-  Views = "views",
-  Potrait = "potrait",
-  Wide = "wide",
-  Content = "content",
-  Description = "description",
-  Sharecountmap = "shareCountMap",
+  Id = 'id',
+  Published = 'published',
+  Title = 'title',
+  Authorid = 'authorId',
+  Slug = 'slug',
+  Createdat = 'createdAt',
+  Updatedat = 'updatedAt',
+  Views = 'views',
+  Potrait = 'potrait',
+  Wide = 'wide',
+  Content = 'content',
+  Description = 'description',
+  Sharecountmap = 'shareCountMap',
 }
 export enum CategoryScalarFieldEnum {
-  Id = "id",
-  Name = "name",
-  Slug = "slug",
+  Id = 'id',
+  Name = 'name',
+  Slug = 'slug',
 }
 export enum DonationAccountScalarFieldEnum {
-  Id = "id",
-  Name = "name",
-  Accountnumber = "accountNumber",
-  Accountname = "accountName",
-  Bankname = "bankName",
-  Logourl = "logoUrl",
+  Id = 'id',
+  Name = 'name',
+  Accountnumber = 'accountNumber',
+  Accountname = 'accountName',
+  Bankname = 'bankName',
+  Logourl = 'logoUrl',
 }
 export enum DonationScalarFieldEnum {
-  Id = "id",
-  Name = "name",
-  Hidename = "hideName",
-  Message = "message",
-  Amount = "amount",
-  Accountid = "accountId",
-  Status = "status",
-  Cityname = "cityName",
-  Type = "type",
-  Approvedbyid = "approvedById",
-  Createdat = "createdAt",
-  Updatedat = "updatedAt",
+  Id = 'id',
+  Name = 'name',
+  Hidename = 'hideName',
+  Message = 'message',
+  Amount = 'amount',
+  Accountid = 'accountId',
+  Status = 'status',
+  Cityname = 'cityName',
+  Type = 'type',
+  Approvedbyid = 'approvedById',
+  Createdat = 'createdAt',
+  Updatedat = 'updatedAt',
 }
 export enum SortOrder {
-  Asc = "asc",
-  Desc = "desc",
+  Asc = 'asc',
+  Desc = 'desc',
 }
 export enum JsonNullValueInput {
-  Jsonnull = "JsonNull",
+  Jsonnull = 'JsonNull',
 }
 export enum JsonNullValueFilter {
-  Dbnull = "DbNull",
-  Jsonnull = "JsonNull",
-  Anynull = "AnyNull",
+  Dbnull = 'DbNull',
+  Jsonnull = 'JsonNull',
+  Anynull = 'AnyNull',
 }
 export enum Roles {
-  Master_admin = "MASTER_ADMIN",
-  Admin = "ADMIN",
-  Editor = "EDITOR",
-  User = "USER",
+  Master_admin = 'MASTER_ADMIN',
+  Admin = 'ADMIN',
+  Editor = 'EDITOR',
+  User = 'USER',
 }
 export enum DonationStatus {
-  Pending = "PENDING",
-  Approved = "APPROVED",
-  Rejected = "REJECTED",
+  Pending = 'PENDING',
+  Approved = 'APPROVED',
+  Rejected = 'REJECTED',
 }
 export enum DonationType {
-  Infaq = "Infaq",
-  Sedekah = "Sedekah",
-  Zakat_mal = "Zakat_Mal",
-  Zakat_fitrah = "Zakat_Fitrah",
-  Yatim_piatu = "Yatim_Piatu",
+  Infaq = 'Infaq',
+  Sedekah = 'Sedekah',
+  Zakat_mal = 'Zakat_Mal',
+  Zakat_fitrah = 'Zakat_Fitrah',
+  Yatim_piatu = 'Yatim_Piatu',
 }
 export interface UserWhereInput {
   AND?: UserWhereInput[];
@@ -3743,4 +3749,20 @@ export interface updateManyUserArgs {
 
 export interface deleteManyUserArgs {
   where?: UserWhereInput;
+}
+
+export interface uploadFileArgs {
+  file?: File;
+}
+
+export interface loginArgs {
+  email: string;
+  password: string;
+}
+
+export interface registerArgs {
+  email: string;
+  name: string;
+  password: string;
+  roles: Roles;
 }

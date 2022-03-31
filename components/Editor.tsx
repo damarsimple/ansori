@@ -1,5 +1,7 @@
+import { gql } from "@apollo/client";
 import dynamic from "next/dynamic";
 import React, { Component } from "react";
+import { client } from "../modules/client";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -54,7 +56,16 @@ export default class Editor extends Component<MyProps, MyState> {
       const file = input.files[0];
       const formData = new FormData();
       const range = this.quill.getSelection(true);
-      const resource = URL.createObjectURL(file);
+
+      const { data } = await client.mutate({
+        mutation: gql`
+          mutation UploadFile($file: Upload) {
+            uploadFile(file: $file)
+          }
+        `,
+        variables: { file },
+      });
+
       this.quill.insertEmbed(
         range.index,
         "image",
@@ -62,7 +73,11 @@ export default class Editor extends Component<MyProps, MyState> {
       );
       this.quill.setSelection(range.index + 1);
       this.quill.deleteText(range.index, 1);
-      this.quill.insertEmbed(range.index, "image", resource);
+      this.quill.insertEmbed(
+        range.index,
+        "image",
+        `${process.env.NEXT_PUBLIC_ASSET_ENDPOINT}${data?.uploadFile}`
+      );
     };
   }
 
